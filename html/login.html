@@ -1,0 +1,80 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .Login-form {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Log in</h1>
+    <nav>
+      <li><a href="">Home</a></li>
+      <li><a href="login">Login</a></li>
+      <li><a href="signup">Signup</a></li>
+    </nav>
+    <form action="" class="Login-form">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" />
+
+      <label for="password">Password</label>
+      <input type="text" id="password" name="password" />
+
+      <input type="submit" name="submit" id="submit" />
+    </form>
+
+    <div class="login__respons">
+      <p class="response__text"></p>
+    </div>
+
+    <script>
+      // const usernameHtml = document.querySelector("#username");
+      // const passwordHtml = document.querySelector("#password");
+      // const submit = document.querySelector("#submit");
+      // const responseText = document.querySelector(".response__text");
+
+      // let loginDetails = {
+      //   username: "",
+      //   password: "",
+      // };
+
+      // submit.addEventListener("click", (e) => {
+      //   e.preventDefault();
+      //   login();
+      // });
+
+      // usernameHtml.addEventListener("input", (e) => {
+      //   console.log(loginDetails);
+      //   console.log(e.target.value);
+      //   loginDetails.username = e.target.value;
+      // });
+      // passwordHtml.addEventListener("input", (e) => {
+      //   console.log(loginDetails);
+      //   console.log(e.target.value);
+      //   loginDetails.password = e.target.value;
+      // });
+
+      // async function login() {
+      //   const res = await fetch("http://localhost:8080/api/auth/signin", {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify(loginDetails),
+      //   });
+      //   console.log(res.json());
+      //   console.log(res);
+      //   if (res.ok) {
+      //     responseText.innerHTML = "correct account details";
+      //   } else {
+      //     responseText.innerHTML = "incorrect account details";
+      //   }
+      // }
+    </script>
+  </body>
+</html>
