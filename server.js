@@ -1,37 +1,38 @@
+// Imports
 const express = require("express");
 const app = express();
 const userModels = require("./models");
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 mongoose.set("strictQuery", false);
 
-// parse requests of content-type - application/json
+// Parse requests of content-type - application/json
 app.use(express.json());
 
-// simple routes
+// Simple routes
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/html/index.html");
+  res.sendFile(__dirname + "/html/index.html"); /* Home */
 });
 app.get("/login", (req, res) => {
-  res.sendFile(__dirname + "/html/login.html");
+  res.sendFile(__dirname + "/html/login.html"); /* Login */
 });
 app.get("/signup", (req, res) => {
-  res.sendFile(__dirname + "/html/sign-up.html");
+  res.sendFile(__dirname + "/html/sign-up.html"); /* Sign up */
 });
 
-// routes
-require("./routes/sign-in-up-out.routes")(app);
+// Routes
+require("./routes/account.routes")(app); /* api */
 
+// Server starter -
 app.listen(9000, () => {
   console.log("server is running");
 });
 
-const username = encodeURIComponent("Erlando");
-const password = encodeURIComponent("bo9e6cbo9e6c");
-const clusterUrl = "@cluster0.sj6o3fg.mongodb.net";
-
+// mongoose connecting server to mongo database
 userModels.mongoose
-  .connect(`mongodb+srv://${username}:${password}${clusterUrl}/independent-database`)
+  /* Data base connection url */
+  .connect(`${process.env.mongoUrl}`)
   .then(() => {
     console.log("Successfully connect to MongoDB.");
   })
