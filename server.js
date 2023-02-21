@@ -4,11 +4,20 @@ const app = express();
 const userModels = require("./models");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const cookieSession = require("cookie-session");
 
 mongoose.set("strictQuery", false);
 
 // Parse requests of content-type - application/json
 app.use(express.json());
+
+app.use(
+  cookieSession({
+    name: "session",
+    secret: process.env.COOKIE_SECRET, // should use as secret environment variable
+    httpOnly: true,
+  })
+);
 
 // Simple routes
 app.get("/", (req, res) => {

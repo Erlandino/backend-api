@@ -1,3 +1,4 @@
+<!-- Home page -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,10 +8,29 @@
   </head>
   <body>
     <h3>Home</h3>
+
+    <!-- Navbar -->
     <nav>
-      <li><a href="">Home</a></li>
+      <li><a href="/">Home</a></li>
       <li><a href="login">Login</a></li>
       <li><a href="signup">Signup</a></li>
+      <li><a href="Profile">Profile</a></li>
     </nav>
+
+    <button id="log-out-button">Log out</button>
   </body>
+  <script>
+    const logOutButton = document.querySelector("#log-out-button");
+
+    console.log(logOutButton);
+
+    logOutButton.addEventListener("click", async function () {
+      const res = await fetch("http://localhost:9000/api/auth/signout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    });
+  </script>
 </html>
