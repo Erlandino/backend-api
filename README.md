@@ -1,7 +1,7 @@
 # backend-api
 
   Current feautures:
-  -Sign out functionality
+ - Sign out functionality
  - Sign up form api
  - Login form api
  - Account details connected to monogodb database
