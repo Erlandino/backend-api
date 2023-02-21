@@ -1,0 +1,98 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .Login-form {
+        display: flex;
+        flex-direction: column;
+        max-width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sign up</h1>
+
+    <!-- Navbar -->
+    <nav>
+      <li><a href="/">Home</a></li>
+      <li><a href="login">Login</a></li>
+      <li><a href="signup">Signup</a></li>
+      <li><a href="Profile">Profile</a></li>
+    </nav>
+
+    <!-- Login form -->
+    <form action="" class="registration-form">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" />
+
+      <label for="password">Password</label>
+      <input type="text" id="password" name="password" />
+
+      <input type="submit" name="submit" id="submit" />
+    </form>
+
+    <!-- Login from response text -->
+    <div class="registration__respons">
+      <p class="response__text"></p>
+    </div>
+
+    <!-- Js -->
+    <script>
+      // DOM variables
+      const usernameHtml = document.querySelector("#username");
+      const passwordHtml = document.querySelector("#password");
+      const submit = document.querySelector("#submit");
+      const responseText = document.querySelector(".response__text");
+
+      // Object with empty account properties
+      let accountDetails = {
+        username: "",
+        password: "",
+      };
+
+      // Submit button, click event listener
+      submit.addEventListener("click", (e) => {
+        e.preventDefault();
+        createAccount();
+      });
+
+      // Username input, input event listener
+      usernameHtml.addEventListener("input", (e) => {
+        console.log(accountDetails);
+        console.log(e.target.value);
+        accountDetails.username = e.target.value;
+      });
+
+      // Password input, input event listener
+      passwordHtml.addEventListener("input", (e) => {
+        console.log(accountDetails);
+        console.log(e.target.value);
+        accountDetails.password = e.target.value;
+      });
+
+      // Sign up function
+      async function createAccount() {
+        // Sign up Api communication
+        const res = await fetch("http://localhost:9000/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(accountDetails),
+        });
+
+        // Puts login response in the class responseText div
+        if (res.ok) {
+          // if both username and password is present
+          responseText.innerHTML = "account created";
+        } else {
+          // if either username or password is missing
+          responseText.innerHTML = "missing account details";
+        }
+      }
+    </script>
+  </body>
+</html>
