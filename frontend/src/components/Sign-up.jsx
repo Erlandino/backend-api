@@ -1,16 +1,23 @@
 // imports
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 // Signup component
 export default function Signup() {
+  // useStates
   const [responseText, setResponseText] = useState("");
   const [signupDetails, setSignupDetails] = useState({
     username: "",
     password: "",
   });
 
+  // useNavigate
+  const navigate = useNavigate();
+
   async function loginApi() {
-    // Login Api communication
+    // Login Api post for account creation of username and password
     const res = await fetch("http://localhost:9000/api/auth/signup", {
       method: "POST",
       headers: {
@@ -19,63 +26,71 @@ export default function Signup() {
       body: JSON.stringify(signupDetails),
     });
 
+    // response data
     let data = await res;
-
-    console.log(data);
 
     // Puts login response in the class responseText div
     if (data.ok) {
       /* if correct username/password*/
       setResponseText((prevState) => "correct account details");
+      navigate("/Login");
     } else {
       /* if incorrect username/password*/
       setResponseText((prevState) => "incorrect account details");
     }
   }
-
-  console.log(signupDetails);
-
   return (
     <div>
       <h1>Sign up</h1>
-      {/* Login form */}
-      <form>
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          onChange={(e) =>
-            setSignupDetails((prevLoginDetails) => {
-              return { ...prevLoginDetails, username: e.target.value };
-            })
-          }
-        />
+      {/* Signup form */}
+      <Form>
+        {/* username input and label container */}
+        <Form.Group className="mb-3" controlId="formUsername">
+          {/* username label */}
+          <Form.Label>Username</Form.Label>
 
-        <label htmlFor="password">Password</label>
-        <input
-          type="text"
-          id="password"
-          name="password"
-          onChange={(e) =>
-            setSignupDetails((prevLoginDetails) => {
-              return { ...prevLoginDetails, password: e.target.value };
-            })
-          }
-        />
+          {/* username input */}
+          <Form.Control
+            type="username"
+            placeholder="Enter username"
+            onChange={(e) =>
+              setSignupDetails((prevLoginDetails) => {
+                return { ...prevLoginDetails, username: e.target.value };
+              })
+            }
+          />
+        </Form.Group>
 
-        <input
+        {/* Password input and label container */}
+        <Form.Group className="mb-3" controlId="formPassword">
+          {/* password label */}
+          <Form.Label>Password</Form.Label>
+
+          {/* password input */}
+          <Form.Control
+            type="password"
+            placeholder="Enter password"
+            onChange={(e) =>
+              setSignupDetails((prevLoginDetails) => {
+                return { ...prevLoginDetails, password: e.target.value };
+              })
+            }
+          />
+        </Form.Group>
+
+        {/* Signup button */}
+        <Button
           type="submit"
-          name="submit"
-          id="submit"
           onClick={(e) => {
             e.preventDefault();
             return loginApi();
           }}
-        />
-      </form>
+        >
+          Signup
+        </Button>
+      </Form>
 
-      {/* Login from response text */}
+      {/* Signup response text */}
       {responseText && (
         <div>
           <p> {responseText} </p>

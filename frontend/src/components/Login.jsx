@@ -1,18 +1,26 @@
 // imports
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 // Login component
 export default function Login(props) {
-  const { setIfShowLoginAndSignupNavbarItems } = props;
+  // Prop destructuring
+  const { setIfShowSignoutNavbarItem } = props;
 
+  // useStates
   const [responseText, setResponseText] = useState("");
   const [loginDetails, setLoginDetails] = useState({
     username: "",
     password: "",
   });
 
+  // useNavigate
+  const navigate = useNavigate();
+
   async function loginApi() {
-    // Login Api communication
+    // Login Api Post username and password for authentication check
     const res = await fetch("http://localhost:9000/api/auth/signin", {
       method: "POST",
       credentials: "include",
@@ -30,7 +38,8 @@ export default function Login(props) {
     if (res.ok) {
       /* if correct username/password*/
       setResponseText((prevState) => "correct account details");
-      setIfShowLoginAndSignupNavbarItems((prevState) => !prevState);
+      setIfShowSignoutNavbarItem((prevState) => !prevState);
+      navigate("/profile");
     } else {
       /* if incorrect username/password*/
       setResponseText((prevState) => "incorrect account details");
@@ -43,41 +52,42 @@ export default function Login(props) {
     <div>
       <h1>Log in</h1>
       {/* Login form */}
-      <form>
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          onChange={(e) =>
-            setLoginDetails((prevLoginDetails) => {
-              return { ...prevLoginDetails, username: e.target.value };
-            })
-          }
-        />
+      <Form>
+        <Form.Group className="mb-3" controlId="formUsername">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            type="username"
+            placeholder="Enter username"
+            onChange={(e) =>
+              setLoginDetails((prevLoginDetails) => {
+                return { ...prevLoginDetails, username: e.target.value };
+              })
+            }
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Enter password"
+            onChange={(e) =>
+              setLoginDetails((prevLoginDetails) => {
+                return { ...prevLoginDetails, password: e.target.value };
+              })
+            }
+          />
+        </Form.Group>
 
-        <label htmlFor="password">Password</label>
-        <input
-          type="text"
-          id="password"
-          name="password"
-          onChange={(e) =>
-            setLoginDetails((prevLoginDetails) => {
-              return { ...prevLoginDetails, password: e.target.value };
-            })
-          }
-        />
-
-        <input
+        <Button
           type="submit"
-          name="submit"
-          id="submit"
           onClick={(e) => {
             e.preventDefault();
             return loginApi();
           }}
-        />
-      </form>
+        >
+          Login
+        </Button>
+      </Form>
 
       {/* Login from response text */}
       {responseText && (
