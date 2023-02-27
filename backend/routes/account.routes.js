@@ -31,7 +31,7 @@ module.exports = function (app) {
   });
 
   // Sign in api
-  app.post("/api/auth/signin", (req, res) => {
+  app.post("/api/auth/signin", (req, res, next) => {
     User.findOne({ username: req.body.username }).exec((err, user) => {
       if (user) {
         if (!bcrypt.compareSync(req.body.password, user.password)) {
@@ -41,9 +41,9 @@ module.exports = function (app) {
         const token = jwt.sign({ id: user.id }, process.env.jwtKey, {
           expiresIn: 86400, // 24 hours
         });
-        req.session.token = token;
 
-        res.status(200).send({ message: "Correct! User logged in!" });
+        req.session.token = token;
+        res.send("Logged in successfully");
       } else {
         res.status(400).send({ message: "Failed! Wrong username!" });
       }
@@ -57,28 +57,25 @@ module.exports = function (app) {
   });
 
   // Profile route
-  app.get(
-    "/profile",
-    (req, res, next) => {
-      let token = req.session.token; /* session token */
-      // if no token is present (user not logged in)
-      if (!token) {
-        res.status(401).send({ message: "Failed! No token provided!" });
+  app.get("/profile", (req, res, next) => {
+    let token = req.session.token; /* session token */
 
-        // if token is present
-      }
-      // checks if token present is valid
-      else
-        jwt.verify(token, process.env.jwtKey, (err, decoded) => {
-          if (err) {
-            // if its not valid
-            console.log(token);
-            return res.status(403).send({ message: "Unauthorized!" });
-          }
-          req.userId = decoded.id;
-          next();
-        });
-    },
-    (req, res, next) => res.sendFile(path.join(__dirname, "..", "html", "profile.html"))
-  );
+    console.log(token);
+    // if no token is present (user not logged in)
+    if (!token) {
+      res.status(401).send({ message: "Failed! No token provided!" });
+
+      // if token is present
+    }
+    // checks if token present is valid
+    else
+      jwt.verify(token, process.env.jwtKey, (err, decoded) => {
+        if (err) {
+          // if its not valid
+          console.log(token);
+          return res.status(403).send({ message: "Unauthorized!" });
+        }
+        req.userId = decoded.id;
+      });
+  });
 };

@@ -63,15 +63,11 @@
 
       // Username input, input event listener
       usernameHtml.addEventListener("input", (e) => {
-        console.log(loginDetails);
-        console.log(e.target.value);
         loginDetails.username = e.target.value;
       });
 
       // Password input, input event listener
       passwordHtml.addEventListener("input", (e) => {
-        console.log(loginDetails);
-        console.log(e.target.value);
         loginDetails.password = e.target.value;
       });
 
@@ -86,8 +82,10 @@
           body: JSON.stringify(loginDetails),
         });
 
+        const data = await res;
+
         // Puts login response in the class responseText div
-        if (res.ok) {
+        if (data.ok) {
           /* if correct username/password*/
           responseText.innerHTML = "correct account details";
         } else {
