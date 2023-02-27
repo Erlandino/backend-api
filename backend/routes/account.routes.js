@@ -61,6 +61,7 @@ module.exports = function (app) {
     let token = req.session.token; /* session token */
 
     console.log(token);
+
     // if no token is present (user not logged in)
     if (!token) {
       res.status(401).send({ message: "Failed! No token provided!" });
@@ -72,10 +73,12 @@ module.exports = function (app) {
       jwt.verify(token, process.env.jwtKey, (err, decoded) => {
         if (err) {
           // if its not valid
-          console.log(token);
+
           return res.status(403).send({ message: "Unauthorized!" });
         }
         req.userId = decoded.id;
+
+        res.status(200).send({ message: "Authorized!" });
       });
   });
 };
