@@ -1,12 +1,14 @@
 // imports
 const bcrypt = require("bcryptjs"); /* Encrypts passwords */
 const verifySignUp = require("../middleware/verifySignUp");
+const verifyToken = require("../middleware/verifyToken");
 const db = require("../models");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const path = require("path");
 
 const User = db.user;
+const Post = db.post;
 
 // exports api routes to server.js
 module.exports = function (app) {
@@ -57,28 +59,28 @@ module.exports = function (app) {
   });
 
   // Profile route
-  app.get("/profile", (req, res, next) => {
-    let token = req.session.token; /* session token */
-
-    console.log(token);
-
-    // if no token is present (user not logged in)
-    if (!token) {
-      res.status(401).send({ message: "Failed! No token provided!" });
-
-      // if token is present
-    }
-    // checks if token present is valid
-    else
-      jwt.verify(token, process.env.jwtKey, (err, decoded) => {
-        if (err) {
-          // if its not valid
-
-          return res.status(403).send({ message: "Unauthorized!" });
-        }
-        req.userId = decoded.id;
-
-        res.status(200).send({ message: "Authorized!" });
-      });
+  app.get("/profile", [verifyToken], (req, res, next) => {
+    res.status(200).send({ message: "Account verified!" });
   });
+
+  // User posts a comment api
+  app.post("/api/auth/comment", [verifyToken], (req, res, next) => {
+    User.findOne({ _id: req.userId }).exec((err, user) => {
+      if (user) {
+        const post = new Post({
+          username: user.username,
+          post: req.body.post,
+        });
+
+        post.save((err) => {
+          res.send({ message: "post was registered successfully!" });
+        });
+      } else {
+        res.status(400).send({ message: "User currently not logged in" });
+      }
+    });
+  });
+
+  // retrieves all comments from database api
+  // app.get("/api/auth/comments", (req, res, next) => {});
 };
