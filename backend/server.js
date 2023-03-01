@@ -5,6 +5,19 @@ const userModels = require("./models");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const cookieSession = require("cookie-session");
+const cors = require("cors");
+
+app.set("trust proxy", 1); // trust first proxy
+
+const corsOptions = {
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: true,
+  credentials: true,
+  optionSuccessStatus: 200,
+  origin: "http://localhost:3000",
+};
+
+app.use(cors(corsOptions));
 
 mongoose.set("strictQuery", false);
 
@@ -14,8 +27,9 @@ app.use(express.json());
 app.use(
   cookieSession({
     name: "session",
-    secret: process.env.COOKIE_SECRET, // should use as secret environment variable
+    secret: process.env.COOKIE_SECRET,
     httpOnly: true,
+    sameSite: false,
   })
 );
 
@@ -34,7 +48,7 @@ app.get("/signup", (req, res) => {
 require("./routes/account.routes")(app); /* api */
 
 // Server starter -
-app.listen(9000, () => {
+app.listen(9000, "0.0.0.0", () => {
   console.log("server is running");
 });
 

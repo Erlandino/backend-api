@@ -22,8 +22,6 @@
   <script>
     const logOutButton = document.querySelector("#log-out-button");
 
-    console.log(logOutButton);
-
     logOutButton.addEventListener("click", async function () {
       const res = await fetch("http://localhost:9000/api/auth/signout", {
         method: "POST",

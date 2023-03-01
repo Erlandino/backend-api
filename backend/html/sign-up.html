@@ -61,15 +61,11 @@
 
       // Username input, input event listener
       usernameHtml.addEventListener("input", (e) => {
-        console.log(accountDetails);
-        console.log(e.target.value);
         accountDetails.username = e.target.value;
       });
 
       // Password input, input event listener
       passwordHtml.addEventListener("input", (e) => {
-        console.log(accountDetails);
-        console.log(e.target.value);
         accountDetails.password = e.target.value;
       });
 
@@ -84,8 +80,10 @@
           body: JSON.stringify(accountDetails),
         });
 
+        const data = await res;
+
         // Puts login response in the class responseText div
-        if (res.ok) {
+        if (data.ok) {
           // if both username and password is present
           responseText.innerHTML = "account created";
         } else {
