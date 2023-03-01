@@ -59,7 +59,7 @@ module.exports = function (app) {
   });
 
   // Profile route
-  app.get("/profile", [verifyToken], (req, res, next) => {
+  app.get("/verifyToken", [verifyToken], (req, res, next) => {
     res.status(200).send({ message: "Account verified!" });
   });
 
@@ -82,5 +82,9 @@ module.exports = function (app) {
   });
 
   // retrieves all comments from database api
-  // app.get("/api/auth/comments", (req, res, next) => {});
+  app.get("/api/auth/user-comments", (req, res, next) => {
+    Post.find({}, function (err, posts) {
+      res.send(posts);
+    });
+  });
 };

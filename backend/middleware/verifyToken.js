@@ -17,7 +17,8 @@ function verifyToken(req, res, next) {
         return res.status(403).send({ message: "Unauthorized!" });
       }
       req.userId = decoded.id;
+
+      next();
     });
-  next();
 }
 module.exports = verifyToken;
