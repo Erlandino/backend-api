@@ -7,7 +7,7 @@ import Form from "react-bootstrap/Form";
 // Login component
 export default function Login(props) {
   // Prop destructuring
-  const { setIfShowSignoutNavbarItem } = props;
+  const { setIfLoggedIn } = props;
 
   // useStates
   const [responseText, setResponseText] = useState("");
@@ -38,7 +38,7 @@ export default function Login(props) {
     if (res.ok) {
       /* if correct username/password*/
       setResponseText((prevState) => "correct account details");
-      setIfShowSignoutNavbarItem((prevState) => !prevState);
+      setIfLoggedIn((prevState) => true);
       navigate("/profile");
     } else {
       /* if incorrect username/password*/
@@ -46,13 +46,12 @@ export default function Login(props) {
     }
   }
 
-  console.log(loginDetails);
-
   return (
-    <div>
-      <h1>Log in</h1>
+    <div className="form_container">
       {/* Login form */}
-      <Form>
+      <Form className="form">
+        <h1 className="form_title">Log in</h1>
+
         <Form.Group className="mb-3" controlId="formUsername">
           <Form.Label>Username</Form.Label>
           <Form.Control
@@ -79,6 +78,7 @@ export default function Login(props) {
         </Form.Group>
 
         <Button
+          className="w-100"
           type="submit"
           onClick={(e) => {
             e.preventDefault();

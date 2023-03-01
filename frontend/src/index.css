@@ -1,7 +1,89 @@
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: white;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0d6efd;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(216, 98%, 42%);
+}
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-image: radial-gradient(
+    circle farthest-corner at 10% 20%,
+    rgba(14, 174, 87, 1) 0%,
+    rgba(12, 116, 117, 1) 90%
+  );
+}
+
+.responseText {
+  text-align: center;
+  color: white;
+  margin: 0;
+}
+
+/* Navbar */
 .nav__item__link {
   text-decoration: none;
   color: black;
+  padding: 0 10px;
 }
 .nav__item__link-active {
   font-weight: 500;
 }
+/* Navbar end */
+
+.form_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin-top: -40px;
+}
+.form_title {
+  margin-bottom: 40px;
+  text-align: center;
+  width: 100%;
+}
+.form {
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px 0px;
+}
+
+/* Front page */
+.frontPage_container {
+  padding: 30px 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.frontPage_title {
+  align-self: center;
+  color: white;
+}
+.frontPage_posts {
+  overflow: scroll;
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+  color: white;
+}
+.frontPage_form {
+  margin-top: 20px;
+}
+/* Front page */

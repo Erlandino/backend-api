@@ -1,15 +1,18 @@
 // Imports
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Component
-export default function Home() {
+export default function Home(props) {
+  const { ifLoggedIn } = props;
+
   // usestates
   const [post, setPost] = useState({
     post: "",
   });
-  const [responseText, setResponseText] = useState("");
+  const [responseText, setResponseText] = useState(null);
+  const [allPosts, setAllPosts] = useState(null);
 
   // Posts comments to api and api to database
   async function postApi() {
@@ -30,22 +33,56 @@ export default function Home() {
     if (res.ok) {
       /* if correct username/password*/
       setResponseText((prevState) => "Post successfully posted");
+      getCommentsApi();
     } else {
       /* if incorrect username/password*/
       setResponseText((prevState) => "Something went wrong");
     }
   }
 
+  async function getCommentsApi() {
+    const res = await fetch("http://localhost:9000/api/auth/user-comments", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    let data = await res.json();
+    setAllPosts((prevPosts) => data);
+  }
+  useEffect(() => {
+    getCommentsApi();
+  }, []);
+
+  console.log("test");
+
   // jsx
   return (
-    <div>
-      <h1>Home</h1>
+    <div className="frontPage_container">
+      <h1 className="frontPage_title">Chat</h1>
+      {allPosts && (
+        <div className="frontPage_posts">
+          <hr />
+          {allPosts.map((element, index) => {
+            return (
+              <div key={index}>
+                <h3>{element.username}</h3>
+                <p>{element.post}</p>
+                <hr />
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-      <Form>
+      {responseText && <p className="responseText">{responseText}</p>}
+
+      <Form className="frontPage_form">
         <Form.Group className="mb-3" controlId="formUsername">
-          <Form.Label>Post</Form.Label>
           <Form.Control
             type="post"
+            disabled={!ifLoggedIn}
             placeholder="Write here"
             onChange={(e) =>
               setPost((prevState) => {
@@ -56,6 +93,8 @@ export default function Home() {
         </Form.Group>
 
         <Button
+          disabled={!ifLoggedIn}
+          className="w-100"
           type="submit"
           onClick={(e) => {
             e.preventDefault();

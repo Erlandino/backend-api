@@ -40,10 +40,10 @@ export default function Signup() {
     }
   }
   return (
-    <div>
-      <h1>Sign up</h1>
+    <div className="form_container">
       {/* Signup form */}
-      <Form>
+      <Form className="form">
+        <h1 className="form_title">Sign up</h1>
         {/* username input and label container */}
         <Form.Group className="mb-3" controlId="formUsername">
           {/* username label */}
@@ -80,6 +80,7 @@ export default function Signup() {
 
         {/* Signup button */}
         <Button
+          className="w-100"
           type="submit"
           onClick={(e) => {
             e.preventDefault();

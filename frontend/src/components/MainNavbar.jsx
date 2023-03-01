@@ -1,16 +1,30 @@
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { useState, useEffect } from "react";
-import { Redirect, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function MainNavbar(props) {
-  const { ifShowSignoutNavbarItem, setIfShowSignoutNavbarItem } = props;
-  const [ifShowLoginAndSignupNavbarItems, setIfShowLoginAndSignupNavbarItems] = useState(true);
-  const [responseText, setResponseText] = useState("");
+  const { setIfLoggedIn, ifLoggedIn } = props;
 
+  async function tokenChecker() {
+    const res = await fetch("http://localhost:9000/verifyToken", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(),
+    });
+
+    if (res.ok) {
+      setIfLoggedIn((prevState) => true);
+    } else {
+      setIfLoggedIn((prevState) => false);
+    }
+  }
   useEffect(() => {
-    setIfShowLoginAndSignupNavbarItems((prevState) => !ifShowSignoutNavbarItem);
-  }, [ifShowSignoutNavbarItem]);
+    tokenChecker();
+  }, []);
 
   async function signOut() {
     // Login Api communication
@@ -26,7 +40,7 @@ export default function MainNavbar(props) {
     const data = await res;
     console.log(data);
 
-    setIfShowSignoutNavbarItem((prevState) => !prevState);
+    setIfLoggedIn((prevState) => false);
   }
   return (
     <Navbar bg="light">
@@ -35,7 +49,7 @@ export default function MainNavbar(props) {
           Home
         </Link>
 
-        {ifShowLoginAndSignupNavbarItems && (
+        {!ifLoggedIn && (
           <>
             <Link to="/Signup" className="nav__item__link">
               Signup
@@ -46,15 +60,15 @@ export default function MainNavbar(props) {
             </Link>
           </>
         )}
-        {!ifShowLoginAndSignupNavbarItems && (
+        {ifLoggedIn && (
           <Link to="/Profile" className="nav__item__link">
             Profile
           </Link>
         )}
-        {ifShowSignoutNavbarItem && (
-          <button className="nav__item__link" onClick={signOut}>
+        {ifLoggedIn && (
+          <Link className="nav__item__link" onClick={signOut}>
             signOut
-          </button>
+          </Link>
         )}
       </Nav>
     </Navbar>

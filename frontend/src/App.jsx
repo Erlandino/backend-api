@@ -11,22 +11,16 @@ import MainNavbar from "./components/MainNavbar";
 
 // main component
 function App() {
-  const [ifShowSignoutNavbarItem, setIfShowSignoutNavbarItem] = useState(false);
+  const [ifLoggedIn, setIfLoggedIn] = useState(false);
 
   return (
     <main className="App">
-      <MainNavbar
-        ifShowSignoutNavbarItem={ifShowSignoutNavbarItem}
-        setIfShowSignoutNavbarItem={setIfShowSignoutNavbarItem}
-      />
+      <MainNavbar ifLoggedIn={ifLoggedIn} setIfLoggedIn={setIfLoggedIn} />
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home ifLoggedIn={ifLoggedIn} />} />
         <Route path="/Signup" element={<Signup />} />
-        <Route
-          path="/Login"
-          element={<Login setIfShowSignoutNavbarItem={setIfShowSignoutNavbarItem} />}
-        />
+        <Route path="/Login" element={<Login setIfLoggedIn={setIfLoggedIn} />} />
         <Route path="/Profile" element={<Profile />} />
       </Routes>
     </main>

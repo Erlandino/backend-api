@@ -10,7 +10,7 @@ export default function Profile() {
   // async func
   async function tokenChecker() {
     console.log("before call");
-    const res = await fetch("http://localhost:9000/profile", {
+    const res = await fetch("http://localhost:9000/verifyToken", {
       method: "GET",
       credentials: "include",
       headers: {
