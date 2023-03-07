@@ -58,18 +58,25 @@ module.exports = function (app) {
     return res.status(200).send({ message: "You've been signed out!" });
   });
 
-  // Profile route
+  // verifyToken route
   app.get("/verifyToken", [verifyToken], (req, res, next) => {
     res.status(200).send({ message: "Account verified!" });
   });
+
+  // Profile route
+  // app.get("/verifyToken", [verifyToken], (req, res, next) => {
+  //   res.status(200).send({ message: "Account verified!" });
+  // });
 
   // User posts a comment api
   app.post("/api/auth/comment", [verifyToken], (req, res, next) => {
     User.findOne({ _id: req.userId }).exec((err, user) => {
       if (user) {
+        console.log(req.body);
         const post = new Post({
           username: user.username,
           post: req.body.post,
+          date: req.body.date,
         });
 
         post.save((err) => {
