@@ -44,32 +44,33 @@ export default function MainNavbar(props) {
   }
   return (
     <Navbar bg="light">
-      <Nav bg="light">
+      <Nav bg="light" className="d-flex justify-content-between w-100">
         <Link to="/" className="nav__item__link">
           Home
         </Link>
 
-        {!ifLoggedIn && (
-          <>
-            <Link to="/Signup" className="nav__item__link">
-              Signup
+        <div>
+          {!ifLoggedIn && (
+            <>
+              <Link to="/Signup" className="nav__item__link">
+                Signup
+              </Link>
+              <Link to="/Login" className="nav__item__link">
+                Login
+              </Link>
+            </>
+          )}
+          {ifLoggedIn && (
+            <Link className="nav__item__link" onClick={signOut}>
+              Signout
             </Link>
-
-            <Link to="/Login" className="nav__item__link">
-              Login
+          )}
+          {ifLoggedIn && (
+            <Link to="/Profile" className="nav__item__link">
+              Profile
             </Link>
-          </>
-        )}
-        {ifLoggedIn && (
-          <Link to="/Profile" className="nav__item__link">
-            Profile
-          </Link>
-        )}
-        {ifLoggedIn && (
-          <Link className="nav__item__link" onClick={signOut}>
-            signOut
-          </Link>
-        )}
+          )}
+        </div>
       </Nav>
     </Navbar>
   );

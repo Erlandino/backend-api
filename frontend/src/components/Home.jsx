@@ -8,15 +8,15 @@ export default function Home(props) {
   const { ifLoggedIn } = props;
 
   // usestates
-  const [post, setPost] = useState({
-    post: "",
-  });
+  const [postData, setPostData] = useState("");
   const [responseText, setResponseText] = useState(null);
   const [allPosts, setAllPosts] = useState(null);
 
   // Posts comments to api and api to database
   async function postApi() {
-    console.log("call start");
+    // gets current date and puts it in a neat string format
+    const date = new Date().toDateString();
+
     // sends post to api to store in database
     const res = await fetch("http://localhost:9000/api/auth/comment", {
       method: "POST",
@@ -24,7 +24,7 @@ export default function Home(props) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(post),
+      body: JSON.stringify({ post: postData, date: date }),
     });
 
     let data = await res;
@@ -56,6 +56,7 @@ export default function Home(props) {
   }, []);
 
   console.log("test");
+  console.log(allPosts);
 
   // jsx
   return (
@@ -69,6 +70,7 @@ export default function Home(props) {
               <div key={index}>
                 <h3>{element.username}</h3>
                 <p>{element.post}</p>
+                <p>{element.date}</p>
                 <hr />
               </div>
             );
@@ -84,11 +86,7 @@ export default function Home(props) {
             type="post"
             disabled={!ifLoggedIn}
             placeholder="Write here"
-            onChange={(e) =>
-              setPost((prevState) => {
-                return { post: e.target.value };
-              })
-            }
+            onChange={(e) => setPostData((prevState) => e.target.value)}
           />
         </Form.Group>
 
