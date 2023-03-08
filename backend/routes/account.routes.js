@@ -72,7 +72,6 @@ module.exports = function (app) {
   app.post("/api/auth/comment", [verifyToken], (req, res, next) => {
     User.findOne({ _id: req.userId }).exec((err, user) => {
       if (user) {
-        console.log(req.body);
         const post = new Post({
           username: user.username,
           post: req.body.post,
@@ -90,8 +89,15 @@ module.exports = function (app) {
 
   // retrieves all comments from database api
   app.get("/api/auth/user-comments", (req, res, next) => {
-    Post.find({}, function (err, posts) {
-      res.send(posts);
+    const { limit, offset } = req.query;
+
+    Post.countDocuments((err, count) => {
+      Post.find({}, function (err, posts) {
+        res.send({ posts: posts, totalPosts: count });
+      })
+        .skip(offset)
+        .sort({ _id: -1 })
+        .limit(limit);
     });
   });
 };
