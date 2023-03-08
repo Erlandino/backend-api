@@ -1,16 +1,23 @@
 // Imports
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Stack from "react-bootstrap/Stack";
 
 // Component
 export default function Home(props) {
+  // props
   const { ifLoggedIn } = props;
+
+  // useRef
+  const postsRef = useRef();
 
   // usestates
   const [postData, setPostData] = useState("");
   const [responseText, setResponseText] = useState(null);
   const [allPosts, setAllPosts] = useState(null);
+  const [postsAmount, setPostsAmount] = useState(null);
+  const [offset, setOffset] = useState(0);
 
   // Posts comments to api and api to database
   async function postApi() {
@@ -27,8 +34,6 @@ export default function Home(props) {
       body: JSON.stringify({ post: postData, date: date }),
     });
 
-    let data = await res;
-    console.log(data);
     // Puts login response in the class responseText div
     if (res.ok) {
       /* if correct username/password*/
@@ -40,47 +45,102 @@ export default function Home(props) {
     }
   }
 
+  // async function, sends get request to api link and receives comments and posts ammount from database
   async function getCommentsApi() {
-    const res = await fetch("http://localhost:9000/api/auth/user-comments", {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    // fetch request
+    const res = await fetch(
+      `http://localhost:9000/api/auth/user-comments?limit=10&offset=${offset}`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    // converts json object to js
     let data = await res.json();
-    setAllPosts((prevPosts) => data);
+
+    // stores comments and posts amount in states
+    setAllPosts((prevPosts) => data.posts);
+    setPostsAmount((prevPosts) => data.totalPosts);
   }
+
+  // useEffect, content will only run on component mount and offset state change,
   useEffect(() => {
     getCommentsApi();
-  }, []);
+  }, [offset]);
 
-  console.log("test");
-  console.log(allPosts);
+  function scrollToTopPosts() {
+    postsRef.current.scrollTop = 0;
+  }
 
   // jsx
   return (
-    <div className="frontPage_container">
+    // main container
+    <div className="frontPage_container mx-2">
+      {/* Title */}
       <h1 className="frontPage_title">Chat</h1>
+
+      {/* Posts */}
       {allPosts && (
-        <div className="frontPage_posts">
-          <hr />
-          {allPosts.map((element, index) => {
-            return (
-              <div key={index}>
-                <h3>{element.username}</h3>
-                <p>{element.post}</p>
-                <p>{element.date}</p>
-                <hr />
-              </div>
-            );
-          })}
-        </div>
+        <>
+          <div
+            className="frontPage_posts p-2 d-flex flex-column justify-content-between"
+            style={{ height: "100%" }}
+            ref={postsRef}
+          >
+            {/* Maps trough comments from api call */}
+            {allPosts.map((element, index) => {
+              return (
+                <div key={index}>
+                  <Stack className="d-flex flex-row" gap={3}>
+                    <p className="text-dark">{element.username}</p>
+                    <p className="date text-body">{element.date}</p>
+                  </Stack>
+                  <p className="text-light">
+                    {">"} {element.post}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Buttons to navigate trough more comments */}
+          <div className="d-flex flex-row justify-content-between my-2">
+            {/* Newer posts */}
+            <Button
+              disabled={offset <= 0}
+              className=""
+              onClick={() => {
+                setOffset((prevState) => prevState - 10);
+                scrollToTopPosts();
+              }}
+            >
+              Newer posts
+            </Button>
+
+            {/* Older posts */}
+            <Button
+              disabled={offset >= postsAmount}
+              className=""
+              onClick={() => {
+                setOffset((prevState) => prevState + 10);
+                scrollToTopPosts();
+              }}
+            >
+              Older posts
+            </Button>
+          </div>
+        </>
       )}
 
+      {/* Response Text */}
       {responseText && <p className="responseText">{responseText}</p>}
 
+      {/* Post comment form */}
       <Form className="frontPage_form">
+        {/* User comment input */}
         <Form.Group className="mb-3" controlId="formUsername">
           <Form.Control
             type="post"
@@ -90,6 +150,7 @@ export default function Home(props) {
           />
         </Form.Group>
 
+        {/* Posts comment in input */}
         <Button
           disabled={!ifLoggedIn}
           className="w-100"

@@ -1,3 +1,6 @@
+* {
+  margin: 0;
+}
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
@@ -83,7 +86,9 @@
   overflow-x: hidden; /* Hide horizontal scrollbar */
   color: white;
 }
-.frontPage_form {
-  margin-top: 20px;
+
+.date {
+  font-size: 12px;
+  align-self: center;
 }
-/* Front page */
+/* Front page end */
