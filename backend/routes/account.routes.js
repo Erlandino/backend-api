@@ -58,15 +58,26 @@ module.exports = function (app) {
     return res.status(200).send({ message: "You've been signed out!" });
   });
 
-  // verifyToken route
+  // VerifyToken route
   app.get("/verifyToken", [verifyToken], (req, res, next) => {
     res.status(200).send({ message: "Account verified!" });
   });
 
-  // Profile route
-  // app.get("/verifyToken", [verifyToken], (req, res, next) => {
-  //   res.status(200).send({ message: "Account verified!" });
-  // });
+  // Get Profile route
+  app.get("/api/auth/profile", [verifyToken], (req, res, next) => {
+    User.findOne({ _id: req.userId }, function (err, user) {
+      res.status(200).send({ userName: user.username, profileImage: user.profileImage });
+    });
+  });
+
+  // Post Profile route
+  app.post("/api/auth/profile", [verifyToken], async (req, res, next) => {
+    const updateImage = await User.findOneAndUpdate(
+      { _id: req.userId },
+      { profileImage: req.body.profileImage },
+      { upsert: true, new: true }
+    );
+  });
 
   // User posts a comment api
   app.post("/api/auth/comment", [verifyToken], (req, res, next) => {
@@ -87,7 +98,7 @@ module.exports = function (app) {
     });
   });
 
-  // retrieves all comments from database api
+  // retrieves a set amount of comments from database api
   app.get("/api/auth/user-comments", (req, res, next) => {
     const { limit, offset } = req.query;
 
