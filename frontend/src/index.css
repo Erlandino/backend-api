@@ -92,3 +92,9 @@
   align-self: center;
 }
 /* Front page end */
+
+/* Profile page */
+.profile-container {
+  color: white;
+  padding: 30px;
+}

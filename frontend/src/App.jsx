@@ -21,7 +21,7 @@ function App() {
         <Route path="/" element={<Home ifLoggedIn={ifLoggedIn} />} />
         <Route path="/Signup" element={<Signup />} />
         <Route path="/Login" element={<Login setIfLoggedIn={setIfLoggedIn} />} />
-        <Route path="/Profile" element={<Profile />} />
+        <Route path="/Profile" element={<Profile ifLoggedIn={ifLoggedIn} />} />
       </Routes>
     </main>
   );
