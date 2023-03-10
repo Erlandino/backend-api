@@ -1,13 +1,14 @@
 // imports
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
 
 // Login component
 export default function Login(props) {
   // Prop destructuring
-  const { setIfLoggedIn } = props;
+  const { setIfLoggedIn, ifLoggedIn } = props;
 
   // useStates
   const [responseText, setResponseText] = useState("");
@@ -18,6 +19,12 @@ export default function Login(props) {
 
   // useNavigate
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (ifLoggedIn) {
+      navigate("/profile");
+    }
+  }, [ifLoggedIn]);
 
   async function loginApi() {
     // Login Api Post username and password for authentication check
@@ -30,19 +37,17 @@ export default function Login(props) {
       body: JSON.stringify(loginDetails),
     });
 
-    // let data = await res.json();
-    let data = await res;
-    console.log(data);
+    let data = await res.json();
+    // console.log(data);
 
     // Puts login response in the class responseText div
     if (res.ok) {
       /* if correct username/password*/
-      setResponseText((prevState) => "correct account details");
       setIfLoggedIn((prevState) => true);
       navigate("/profile");
     } else {
       /* if incorrect username/password*/
-      setResponseText((prevState) => "incorrect account details");
+      setResponseText((prevState) => "Incorrect account details");
     }
   }
 
@@ -57,6 +62,7 @@ export default function Login(props) {
           <Form.Control
             type="username"
             placeholder="Enter username"
+            className="py-3 mb-2"
             onChange={(e) =>
               setLoginDetails((prevLoginDetails) => {
                 return { ...prevLoginDetails, username: e.target.value };
@@ -69,6 +75,7 @@ export default function Login(props) {
           <Form.Control
             type="password"
             placeholder="Enter password"
+            className="py-3 mb-2"
             onChange={(e) =>
               setLoginDetails((prevLoginDetails) => {
                 return { ...prevLoginDetails, password: e.target.value };
@@ -76,6 +83,9 @@ export default function Login(props) {
             }
           />
         </Form.Group>
+
+        {/* Login from response text */}
+        {responseText && <Alert variant="danger">{responseText}</Alert>}
 
         <Button
           className="w-100"
@@ -88,13 +98,6 @@ export default function Login(props) {
           Login
         </Button>
       </Form>
-
-      {/* Login from response text */}
-      {responseText && (
-        <div>
-          <p> {responseText} </p>
-        </div>
-      )}
     </div>
   );
 }
