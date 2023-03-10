@@ -20,8 +20,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Home ifLoggedIn={ifLoggedIn} />} />
         <Route path="/Signup" element={<Signup />} />
-        <Route path="/Login" element={<Login setIfLoggedIn={setIfLoggedIn} />} />
-        <Route path="/Profile" element={<Profile />} />
+        <Route
+          path="/Login"
+          element={<Login setIfLoggedIn={setIfLoggedIn} ifLoggedIn={ifLoggedIn} />}
+        />
+        <Route path="/Profile" element={<Profile ifLoggedIn={ifLoggedIn} />} />
       </Routes>
     </main>
   );

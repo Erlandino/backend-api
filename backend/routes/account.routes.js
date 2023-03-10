@@ -45,7 +45,7 @@ module.exports = function (app) {
         });
 
         req.session.token = token;
-        res.send("Logged in successfully");
+        res.status(200).send({ message: "Logged in successfully" });
       } else {
         res.status(400).send({ message: "Failed! Wrong username!" });
       }
@@ -58,33 +58,71 @@ module.exports = function (app) {
     return res.status(200).send({ message: "You've been signed out!" });
   });
 
-  // Profile route
+  // VerifyToken route
   app.get("/verifyToken", [verifyToken], (req, res, next) => {
     res.status(200).send({ message: "Account verified!" });
   });
 
+  // Get Profile route
+  app.get("/api/auth/profile", [verifyToken], (req, res, next) => {
+    User.findOne({ _id: req.userId }, function (err, user) {
+      res.status(200).send({ userName: user.username, profileImage: user.profileImage });
+    });
+  });
+
+  // Post Profile route
+  app.post("/api/auth/profile", [verifyToken], async (req, res, next) => {
+    const updateProfile = await User.findOneAndUpdate(
+      { _id: req.userId },
+      { profileImage: req.body.profileImage },
+      { upsert: true, new: true }
+    );
+    User.findOne({ _id: req.userId }, async function (err, user) {
+      const updatePosts = await Post.updateMany(
+        { username: user.username },
+        { profileImage: req.body.profileImage },
+        { upsert: true }
+      );
+    });
+  });
+
   // User posts a comment api
   app.post("/api/auth/comment", [verifyToken], (req, res, next) => {
-    User.findOne({ _id: req.userId }).exec((err, user) => {
+    User.findOne({ _id: req.userId }, async (err, user) => {
       if (user) {
         const post = new Post({
           username: user.username,
           post: req.body.post,
+          date: req.body.date,
         });
 
         post.save((err) => {
           res.send({ message: "post was registered successfully!" });
         });
+        const updatePosts = await Post.updateMany(
+          { username: user.username },
+          { profileImage: user.profileImage },
+          { upsert: true }
+        );
       } else {
         res.status(400).send({ message: "User currently not logged in" });
       }
     });
   });
 
-  // retrieves all comments from database api
+  // retrieves a set amount of comments from database api
   app.get("/api/auth/user-comments", (req, res, next) => {
-    Post.find({}, function (err, posts) {
-      res.send(posts);
+    const { limit, offset } = req.query;
+
+    // username
+
+    Post.countDocuments((err, count) => {
+      Post.find({}, function (err, posts) {
+        res.send({ posts: posts, totalPosts: count });
+      })
+        .skip(offset)
+        .sort({ _id: -1 })
+        .limit(limit);
     });
   });
 };

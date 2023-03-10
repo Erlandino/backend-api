@@ -1,3 +1,6 @@
+* {
+  margin: 0;
+}
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
@@ -21,11 +24,8 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-image: radial-gradient(
-    circle farthest-corner at 10% 20%,
-    rgba(14, 174, 87, 1) 0%,
-    rgba(12, 116, 117, 1) 90%
-  );
+  background-color: rgba(14, 174, 87, 1);
+  /* background-color: rgba(12, 116, 117, 1); */
 }
 
 .responseText {
@@ -51,7 +51,6 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  margin-top: -40px;
 }
 .form_title {
   margin-bottom: 40px;
@@ -63,6 +62,13 @@
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0px 0px 10px 0px;
+  width: 600px;
+}
+.form-label {
+  font-size: 20px;
+}
+.form-control {
+  padding: 1rem 0.75rem;
 }
 
 /* Front page */
@@ -83,7 +89,24 @@
   overflow-x: hidden; /* Hide horizontal scrollbar */
   color: white;
 }
-.frontPage_form {
-  margin-top: 20px;
+
+.date {
+  font-size: 12px;
+  align-self: center;
 }
-/* Front page */
+/* Front page end */
+
+/* Profile page */
+.profile-container {
+  color: white;
+  padding: 30px;
+}
+.Chat-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.273);
+  margin: 10px;
+}
