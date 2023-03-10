@@ -72,17 +72,25 @@ module.exports = function (app) {
 
   // Post Profile route
   app.post("/api/auth/profile", [verifyToken], async (req, res, next) => {
-    const updateImage = await User.findOneAndUpdate(
+    const updateProfile = await User.findOneAndUpdate(
       { _id: req.userId },
       { profileImage: req.body.profileImage },
       { upsert: true, new: true }
     );
+    User.findOne({ _id: req.userId }, async function (err, user) {
+      const updatePosts = await Post.updateMany(
+        { username: user.username },
+        { profileImage: req.body.profileImage },
+        { upsert: true }
+      );
+    });
   });
 
   // User posts a comment api
   app.post("/api/auth/comment", [verifyToken], (req, res, next) => {
-    User.findOne({ _id: req.userId }).exec((err, user) => {
+    User.findOne({ _id: req.userId }, async (err, user) => {
       if (user) {
+
         const post = new Post({
           username: user.username,
           post: req.body.post,
@@ -92,6 +100,11 @@ module.exports = function (app) {
         post.save((err) => {
           res.send({ message: "post was registered successfully!" });
         });
+                const updatePosts = await Post.updateMany(
+          { username: user.username },
+          { profileImage: user.profileImage },
+          { upsert: true }
+        );
       } else {
         res.status(400).send({ message: "User currently not logged in" });
       }
@@ -101,6 +114,8 @@ module.exports = function (app) {
   // retrieves a set amount of comments from database api
   app.get("/api/auth/user-comments", (req, res, next) => {
     const { limit, offset } = req.query;
+
+    // username
 
     Post.countDocuments((err, count) => {
       Post.find({}, function (err, posts) {
