@@ -23,7 +23,7 @@
 .App {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   background-color: rgba(14, 174, 87, 1);
   /* background-color: rgba(12, 116, 117, 1); */
 }
