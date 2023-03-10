@@ -93,8 +93,13 @@ export default function Home(props) {
             {/* Maps trough comments from api call */}
             {allPosts.map((element, index) => {
               return (
-                <div key={index}>
+                <div key={index} className="Chat-message">
                   <Stack className="d-flex flex-row" gap={3}>
+                    <img
+                      src={element.profileImage}
+                      alt=""
+                      style={{ width: "60px", height: "60px", borderRadius: "100%" }}
+                    />
                     <p className="text-dark">{element.username}</p>
                     <p className="date text-body">{element.date}</p>
                   </Stack>
