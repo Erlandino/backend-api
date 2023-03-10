@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
+import Stack from "react-bootstrap/Stack";
 
 export default function Profile(props) {
   const { ifLoggedIn } = props;
@@ -9,6 +10,7 @@ export default function Profile(props) {
   const [profileData, setProfileData] = useState({
     userName: "",
     profileImage: "",
+    profileColor: "black",
   });
 
   // useNavigate
@@ -25,7 +27,6 @@ export default function Profile(props) {
     });
 
     let data = await res.json();
-    console.log(data);
 
     if (res.ok) {
       setProfileData((prevState) => data);
@@ -61,13 +62,17 @@ export default function Profile(props) {
     }
   }
 
+  // console.log(profileData.profileColor);
+
   return (
     <>
       {ifLoggedIn && (
         <div className="profile-container">
           <h1>Profile</h1>
           <hr />
-          <h3>Username: {profileData.userName}</h3>
+          <h3>
+            Username: <span className="text-dark">{profileData.userName}</span>
+          </h3>
           <hr />
           <h3>Profile picture</h3>
           <img
@@ -77,6 +82,95 @@ export default function Profile(props) {
           />
           <br />
           <Button onClick={setProfilePicture}>Add new profile picture</Button>
+          <hr />
+          <h3>Chose profile name color</h3>
+          {/* profileColor */}
+          <ul className="list-group d-flex flex-row list-group-flush">
+            <li
+              className="list-group-item"
+              onClick={() =>
+                setProfileData((prevData) => {
+                  return { ...prevData, profileColor: "blue" };
+                })
+              }
+            >
+              Blue
+            </li>
+            <li
+              className="list-group-item"
+              onClick={() =>
+                setProfileData((prevData) => {
+                  return { ...prevData, profileColor: "red" };
+                })
+              }
+            >
+              Red
+            </li>
+            <li
+              className="list-group-item"
+              onClick={() =>
+                setProfileData((prevData) => {
+                  return { ...prevData, profileColor: "green" };
+                })
+              }
+            >
+              Green
+            </li>
+            <li
+              className="list-group-item"
+              onClick={() =>
+                setProfileData((prevData) => {
+                  return { ...prevData, profileColor: "yellow" };
+                })
+              }
+            >
+              Yellow
+            </li>
+            <li
+              className="list-group-item"
+              onClick={() =>
+                setProfileData((prevData) => {
+                  return { ...prevData, profileColor: "purple" };
+                })
+              }
+            >
+              Purple
+            </li>
+            <li
+              className="list-group-item"
+              onClick={() =>
+                setProfileData((prevData) => {
+                  return { ...prevData, profileColor: "pink" };
+                })
+              }
+            >
+              Pink
+            </li>
+            <li
+              className="list-group-item"
+              onClick={() =>
+                setProfileData((prevData) => {
+                  return { ...prevData, profileColor: "black" };
+                })
+              }
+            >
+              black
+            </li>
+          </ul>
+          <hr />
+          <h3>Chat preview</h3>
+          <div className="Chat-message">
+            <Stack className="d-flex flex-row" gap={3}>
+              <img
+                src={profileData.profileImage}
+                alt=""
+                style={{ width: "60px", height: "60px", borderRadius: "100%" }}
+              />
+              <p style={{ color: profileData.profileColor }}>{profileData.userName}</p>
+              <p className="date text-body">Fri Mar 10 2023</p>
+            </Stack>
+            <p className="text-light">{">"} This is a post</p>
+          </div>
           <hr />
           <Button onClick={updateProfile}>Update Profile</Button>
         </div>
