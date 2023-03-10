@@ -3,14 +3,20 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
 
 // Signup component
 export default function Signup() {
   // useStates
-  const [responseText, setResponseText] = useState("");
+  const [responseText, setResponseText] = useState({
+    username: false,
+    passwordLength: false,
+    confirmPassword: false,
+  });
   const [signupDetails, setSignupDetails] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
   });
 
   // useNavigate
@@ -27,18 +33,20 @@ export default function Signup() {
     });
 
     // response data
-    let data = await res;
+    let data = await res.json();
+    console.log(data);
 
     // Puts login response in the class responseText div
-    if (data.ok) {
+    if (res.ok) {
       /* if correct username/password*/
       setResponseText((prevState) => "correct account details");
       navigate("/Login");
     } else {
       /* if incorrect username/password*/
-      setResponseText((prevState) => "incorrect account details");
+      setResponseText((prevState) => data);
     }
   }
+  console.log(responseText.username);
   return (
     <div className="form_container">
       {/* Signup form */}
@@ -53,16 +61,19 @@ export default function Signup() {
           <Form.Control
             type="username"
             placeholder="Enter username"
+            className="py-3 mb-2"
             onChange={(e) =>
               setSignupDetails((prevLoginDetails) => {
                 return { ...prevLoginDetails, username: e.target.value };
               })
             }
           />
+
+          {responseText.username && <Alert variant="danger">{responseText.username}</Alert>}
         </Form.Group>
 
         {/* Password input and label container */}
-        <Form.Group className="mb-3" controlId="formPassword">
+        <Form.Group className="mb-3">
           {/* password label */}
           <Form.Label>Password</Form.Label>
 
@@ -70,12 +81,30 @@ export default function Signup() {
           <Form.Control
             type="password"
             placeholder="Enter password"
+            className="password-input-one py-3 mb-2"
             onChange={(e) =>
               setSignupDetails((prevLoginDetails) => {
                 return { ...prevLoginDetails, password: e.target.value };
               })
             }
           />
+
+          <Form.Control
+            type="password"
+            placeholder="Confirm password"
+            className="py-3 mb-2"
+            onChange={(e) =>
+              setSignupDetails((prevLoginDetails) => {
+                return { ...prevLoginDetails, confirmPassword: e.target.value };
+              })
+            }
+          />
+          {responseText.confirmPassword && (
+            <Alert variant="danger">{responseText.confirmPassword}</Alert>
+          )}
+          {responseText.passwordLength && (
+            <Alert variant="danger">{responseText.passwordLength}</Alert>
+          )}
         </Form.Group>
 
         {/* Signup button */}
@@ -92,11 +121,11 @@ export default function Signup() {
       </Form>
 
       {/* Signup response text */}
-      {responseText && (
+      {/* {responseText && (
         <div>
           <p> {responseText} </p>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
