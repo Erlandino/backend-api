@@ -45,7 +45,7 @@ module.exports = function (app) {
         });
 
         req.session.token = token;
-        res.send("Logged in successfully");
+        res.status(200).send({ message: "Logged in successfully" });
       } else {
         res.status(400).send({ message: "Failed! Wrong username!" });
       }
@@ -90,7 +90,6 @@ module.exports = function (app) {
   app.post("/api/auth/comment", [verifyToken], (req, res, next) => {
     User.findOne({ _id: req.userId }, async (err, user) => {
       if (user) {
-
         const post = new Post({
           username: user.username,
           post: req.body.post,
@@ -100,7 +99,7 @@ module.exports = function (app) {
         post.save((err) => {
           res.send({ message: "post was registered successfully!" });
         });
-                const updatePosts = await Post.updateMany(
+        const updatePosts = await Post.updateMany(
           { username: user.username },
           { profileImage: user.profileImage },
           { upsert: true }
