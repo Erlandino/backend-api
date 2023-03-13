@@ -61,6 +61,8 @@ export default function Home(props) {
     // converts json object to js
     let data = await res.json();
 
+    // console.log(data);
+
     // stores comments and posts amount in states
     setAllPosts((prevPosts) => data.posts);
     setPostsAmount((prevPosts) => data.totalPosts);
@@ -100,7 +102,9 @@ export default function Home(props) {
                       alt=""
                       style={{ width: "60px", height: "60px", borderRadius: "100%" }}
                     />
-                    <p className="text-dark">{element.username}</p>
+                    <p className="" style={{ color: element.profileColor }}>
+                      {element.username}
+                    </p>
                     <p className="date text-body">{element.date}</p>
                   </Stack>
                   <p className="text-light">

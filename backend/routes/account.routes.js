@@ -66,7 +66,11 @@ module.exports = function (app) {
   // Get Profile route
   app.get("/api/auth/profile", [verifyToken], (req, res, next) => {
     User.findOne({ _id: req.userId }, function (err, user) {
-      res.status(200).send({ userName: user.username, profileImage: user.profileImage });
+      res.status(200).send({
+        userName: user.username,
+        profileImage: user.profileImage,
+        profileColor: user.profileColor,
+      });
     });
   });
 
@@ -74,13 +78,13 @@ module.exports = function (app) {
   app.post("/api/auth/profile", [verifyToken], async (req, res, next) => {
     const updateProfile = await User.findOneAndUpdate(
       { _id: req.userId },
-      { profileImage: req.body.profileImage },
+      { profileImage: req.body.profileImage, profileColor: req.body.profileColor },
       { upsert: true, new: true }
     );
     User.findOne({ _id: req.userId }, async function (err, user) {
       const updatePosts = await Post.updateMany(
         { username: user.username },
-        { profileImage: req.body.profileImage },
+        { profileImage: req.body.profileImage, profileColor: req.body.profileColor },
         { upsert: true }
       );
     });
