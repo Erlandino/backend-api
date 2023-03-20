@@ -23,9 +23,14 @@
 .App {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   background-color: rgba(14, 174, 87, 1);
   /* background-color: rgba(12, 116, 117, 1); */
+}
+
+.list-group-item:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
 }
 
 .responseText {
@@ -79,10 +84,13 @@
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  height: 100vh;
+  margin-top: -40px;
 }
 .frontPage_title {
   align-self: center;
   color: white;
+  margin: 10px 0;
 }
 .frontPage_posts {
   overflow: scroll;
@@ -94,12 +102,16 @@
   font-size: 12px;
   align-self: center;
 }
+.dateAndName * {
+  margin: 0;
+}
 /* Front page end */
 
 /* Profile page */
 .profile-container {
   color: white;
   padding: 30px;
+  background-color: rgba(14, 174, 87, 1);
 }
 .Chat-message {
   display: flex;

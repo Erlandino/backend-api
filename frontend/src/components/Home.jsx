@@ -102,10 +102,12 @@ export default function Home(props) {
                       alt=""
                       style={{ width: "60px", height: "60px", borderRadius: "100%" }}
                     />
-                    <p className="" style={{ color: element.profileColor }}>
-                      {element.username}
-                    </p>
-                    <p className="date text-body">{element.date}</p>
+                    <div className="dateAndName d-flex flex-column">
+                      <p className="" style={{ color: element.profileColor }}>
+                        {element.username}
+                      </p>
+                      <p className="date text-body">{element.date}</p>
+                    </div>
                   </Stack>
                   <p className="text-light">
                     {">"} {element.post}

@@ -35,7 +35,7 @@ export default function Profile(props) {
   }
 
   async function updateProfile() {
-    const res = await fetch("http://localhost:9000/api/auth/profile", {
+    await fetch("http://localhost:9000/api/auth/profile", {
       method: "Post",
       credentials: "include",
       headers: {
@@ -62,7 +62,9 @@ export default function Profile(props) {
     }
   }
 
-  // console.log(profileData.profileColor);
+  const profileColors = ["Blue", "Red", "Green", "Yellow", "Purple", "Pink", "Black"];
+
+  console.log(profileData.profileColor);
 
   return (
     <>
@@ -86,76 +88,23 @@ export default function Profile(props) {
           <h3>Chose profile name color</h3>
           {/* profileColor */}
           <ul className="list-group d-flex flex-row list-group-flush">
-            <li
-              className="list-group-item"
-              onClick={() =>
-                setProfileData((prevData) => {
-                  return { ...prevData, profileColor: "blue" };
-                })
-              }
-            >
-              Blue
-            </li>
-            <li
-              className="list-group-item"
-              onClick={() =>
-                setProfileData((prevData) => {
-                  return { ...prevData, profileColor: "red" };
-                })
-              }
-            >
-              Red
-            </li>
-            <li
-              className="list-group-item"
-              onClick={() =>
-                setProfileData((prevData) => {
-                  return { ...prevData, profileColor: "green" };
-                })
-              }
-            >
-              Green
-            </li>
-            <li
-              className="list-group-item"
-              onClick={() =>
-                setProfileData((prevData) => {
-                  return { ...prevData, profileColor: "yellow" };
-                })
-              }
-            >
-              Yellow
-            </li>
-            <li
-              className="list-group-item"
-              onClick={() =>
-                setProfileData((prevData) => {
-                  return { ...prevData, profileColor: "purple" };
-                })
-              }
-            >
-              Purple
-            </li>
-            <li
-              className="list-group-item"
-              onClick={() =>
-                setProfileData((prevData) => {
-                  return { ...prevData, profileColor: "pink" };
-                })
-              }
-            >
-              Pink
-            </li>
-            <li
-              className="list-group-item"
-              onClick={() =>
-                setProfileData((prevData) => {
-                  return { ...prevData, profileColor: "black" };
-                })
-              }
-            >
-              black
-            </li>
+            {profileColors.map((element, index) => {
+              return (
+                <li
+                  key={index}
+                  className={`list-group-item ${
+                    element === profileData.profileColor ? "active" : ""
+                  }`}
+                  onClick={() =>
+                    setProfileData((prevData) => {
+                      return { ...prevData, profileColor: element };
+                    })
+                  }
+                >
+                  {element}
+                </li>
+              );
+            })}
           </ul>
           <hr />
           <h3>Chat preview</h3>
