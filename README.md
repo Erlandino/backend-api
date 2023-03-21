@@ -17,4 +17,5 @@
  - Username change
  - Password change
  - Like / dislike feauture
+ - Email verification
  
