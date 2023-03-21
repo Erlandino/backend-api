@@ -24,7 +24,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: rgba(14, 174, 87, 1);
+  /* background-color: rgba(14, 174, 87, 1); */
   /* background-color: rgba(12, 116, 117, 1); */
 }
 
@@ -35,18 +35,19 @@
 
 .responseText {
   text-align: center;
-  color: white;
   margin: 0;
 }
 
 /* Navbar */
 .nav__item__link {
   text-decoration: none;
-  color: black;
   padding: 0 10px;
 }
 .nav__item__link-active {
   font-weight: 500;
+}
+.navbar {
+  background-color: #5fad41;
 }
 /* Navbar end */
 
@@ -58,15 +59,12 @@
   height: 100%;
 }
 .form_title {
-  margin-bottom: 40px;
-  text-align: center;
-  width: 100%;
+  margin: 30px 0 0 30px;
 }
 .form {
   background-color: white;
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0px 0px 10px 0px;
   width: 600px;
 }
 .form-label {
@@ -78,24 +76,21 @@
 
 /* Front page */
 .frontPage_container {
-  padding: 30px 0;
+  padding: 30px 30px;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
   height: 100vh;
-  margin-top: -40px;
 }
 .frontPage_title {
-  align-self: center;
-  color: white;
-  margin: 10px 0;
+  color: #363635;
+  margin-bottom: 30px;
 }
 .frontPage_posts {
   overflow: scroll;
   overflow-x: hidden; /* Hide horizontal scrollbar */
-  color: white;
 }
 
 .date {
@@ -105,13 +100,15 @@
 .dateAndName * {
   margin: 0;
 }
+.post-button {
+  background-color: #5fad41;
+  margin-bottom: 10px;
+}
 /* Front page end */
 
 /* Profile page */
 .profile-container {
-  color: white;
   padding: 30px;
-  background-color: rgba(14, 174, 87, 1);
 }
 .Chat-message {
   display: flex;
@@ -119,6 +116,5 @@
   justify-content: center;
   border-radius: 5px;
   padding: 10px;
-  background-color: rgba(255, 255, 255, 0.273);
   margin: 10px;
 }

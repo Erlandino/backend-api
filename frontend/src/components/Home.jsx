@@ -37,11 +37,11 @@ export default function Home(props) {
     // Puts login response in the class responseText div
     if (res.ok) {
       /* if correct username/password*/
-      setResponseText((prevState) => "Post successfully posted");
+      setResponseText((_prevState) => "Post successfully posted");
       getCommentsApi();
     } else {
       /* if incorrect username/password*/
-      setResponseText((prevState) => "Something went wrong");
+      setResponseText((_prevState) => "Something went wrong");
     }
   }
 
@@ -64,8 +64,8 @@ export default function Home(props) {
     // console.log(data);
 
     // stores comments and posts amount in states
-    setAllPosts((prevPosts) => data.posts);
-    setPostsAmount((prevPosts) => data.totalPosts);
+    setAllPosts((_prevPosts) => data.posts);
+    setPostsAmount((_prevPosts) => data.totalPosts);
   }
 
   // useEffect, content will only run on component mount and offset state change,
@@ -80,9 +80,40 @@ export default function Home(props) {
   // jsx
   return (
     // main container
-    <div className="frontPage_container mx-2">
+    <div className="frontPage_container">
       {/* Title */}
       <h1 className="frontPage_title">Chat</h1>
+
+      {/* Response Text */}
+      {responseText && <p className="responseText">{responseText}</p>}
+
+      {/* Post comment form */}
+      <Form className="frontPage_form">
+        {/* User comment input */}
+        <Form.Group className="mb-3" controlId="formUsername">
+          <Form.Control
+            type="post"
+            disabled={!ifLoggedIn}
+            placeholder="Write here"
+            as="textarea"
+            rows={3}
+            onChange={(e) => setPostData((_prevState) => e.target.value)}
+          />
+        </Form.Group>
+
+        {/* Posts comment in input */}
+        <Button
+          disabled={!ifLoggedIn}
+          className="post-button"
+          type="submit"
+          onClick={(e) => {
+            e.preventDefault();
+            return postApi();
+          }}
+        >
+          Post
+        </Button>
+      </Form>
 
       {/* Posts */}
       {allPosts && (
@@ -109,9 +140,7 @@ export default function Home(props) {
                       <p className="date text-body">{element.date}</p>
                     </div>
                   </Stack>
-                  <p className="text-light">
-                    {">"} {element.post}
-                  </p>
+                  <p>{element.post}</p>
                 </div>
               );
             })}
@@ -145,35 +174,6 @@ export default function Home(props) {
           </div>
         </>
       )}
-
-      {/* Response Text */}
-      {responseText && <p className="responseText">{responseText}</p>}
-
-      {/* Post comment form */}
-      <Form className="frontPage_form">
-        {/* User comment input */}
-        <Form.Group className="mb-3" controlId="formUsername">
-          <Form.Control
-            type="post"
-            disabled={!ifLoggedIn}
-            placeholder="Write here"
-            onChange={(e) => setPostData((prevState) => e.target.value)}
-          />
-        </Form.Group>
-
-        {/* Posts comment in input */}
-        <Button
-          disabled={!ifLoggedIn}
-          className="w-100"
-          type="submit"
-          onClick={(e) => {
-            e.preventDefault();
-            return postApi();
-          }}
-        >
-          Post
-        </Button>
-      </Form>
     </div>
   );
 }

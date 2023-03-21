@@ -43,30 +43,55 @@ export default function MainNavbar(props) {
     setIfLoggedIn((prevState) => false);
   }
   return (
-    <Navbar bg="light">
-      <Nav bg="light" className="d-flex justify-content-between w-100">
-        <Link to="/" className="nav__item__link">
+    <Navbar>
+      <Nav className="d-flex justify-content-between w-100">
+        <Link
+          to="/"
+          className="nav__item__link text-light
+
+"
+        >
           Home
         </Link>
 
         <div>
           {!ifLoggedIn && (
             <>
-              <Link to="/Signup" className="nav__item__link">
+              <Link
+                to="/Signup"
+                className="nav__item__link text-light
+
+"
+              >
                 Signup
               </Link>
-              <Link to="/Login" className="nav__item__link">
+              <Link
+                to="/Login"
+                className="nav__item__link text-light
+
+"
+              >
                 Login
               </Link>
             </>
           )}
           {ifLoggedIn && (
-            <Link className="nav__item__link" onClick={signOut}>
+            <Link
+              className="nav__item__link text-light
+
+"
+              onClick={signOut}
+            >
               Signout
             </Link>
           )}
           {ifLoggedIn && (
-            <Link to="/Profile" className="nav__item__link">
+            <Link
+              to="/Profile"
+              className="nav__item__link text-light
+
+"
+            >
               Profile
             </Link>
           )}

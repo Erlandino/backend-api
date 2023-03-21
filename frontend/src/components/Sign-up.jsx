@@ -48,84 +48,89 @@ export default function Signup() {
   }
   console.log(responseText.username);
   return (
-    <div className="form_container">
-      {/* Signup form */}
-      <Form className="form">
-        <h1 className="form_title">Sign up</h1>
-        {/* username input and label container */}
-        <Form.Group className="mb-3" controlId="formUsername">
-          {/* username label */}
-          <Form.Label>Username</Form.Label>
+    <>
+      <h1 className="form_title">Sign up</h1>
+      <div className="form_container">
+        {/* Signup form */}
+        <Form className="form">
+          {/* username input and label container */}
+          <Form.Group className="mb-3" controlId="formUsername">
+            {/* username label */}
+            <Form.Label>Username</Form.Label>
 
-          {/* username input */}
-          <Form.Control
-            type="username"
-            placeholder="Enter username"
-            className="py-3 mb-2"
-            onChange={(e) =>
-              setSignupDetails((prevLoginDetails) => {
-                return { ...prevLoginDetails, username: e.target.value };
-              })
-            }
-          />
+            {/* username input */}
+            <Form.Control
+              type="username"
+              placeholder="Username here ..."
+              className="py-3 mb-2"
+              onChange={(e) =>
+                setSignupDetails((prevLoginDetails) => {
+                  return { ...prevLoginDetails, username: e.target.value };
+                })
+              }
+            />
 
-          {responseText.username && <Alert variant="danger">{responseText.username}</Alert>}
-        </Form.Group>
+            {responseText.username && <Alert variant="danger">{responseText.username}</Alert>}
+          </Form.Group>
 
-        {/* Password input and label container */}
-        <Form.Group className="mb-3">
-          {/* password label */}
-          <Form.Label>Password</Form.Label>
+          {/* Password input and label container */}
+          <Form.Group className="mb-3">
+            {/* password label */}
+            <Form.Label>Password</Form.Label>
 
-          {/* password input */}
-          <Form.Control
-            type="password"
-            placeholder="Enter password"
-            className="password-input-one py-3 mb-2"
-            onChange={(e) =>
-              setSignupDetails((prevLoginDetails) => {
-                return { ...prevLoginDetails, password: e.target.value };
-              })
-            }
-          />
+            {/* password input */}
+            <Form.Control
+              type="password"
+              placeholder="Password here ..."
+              className="password-input-one py-3 mb-2"
+              onChange={(e) =>
+                setSignupDetails((prevLoginDetails) => {
+                  return { ...prevLoginDetails, password: e.target.value };
+                })
+              }
+            />
+            {/* password label */}
+            <Form.Label>Confirm password</Form.Label>
 
-          <Form.Control
-            type="password"
-            placeholder="Confirm password"
-            className="py-3 mb-2"
-            onChange={(e) =>
-              setSignupDetails((prevLoginDetails) => {
-                return { ...prevLoginDetails, confirmPassword: e.target.value };
-              })
-            }
-          />
-          {responseText.confirmPassword && (
-            <Alert variant="danger">{responseText.confirmPassword}</Alert>
-          )}
-          {responseText.passwordLength && (
-            <Alert variant="danger">{responseText.passwordLength}</Alert>
-          )}
-        </Form.Group>
+            {/* password input */}
+            <Form.Control
+              type="password"
+              placeholder="Password here ..."
+              className="py-3 mb-2"
+              onChange={(e) =>
+                setSignupDetails((prevLoginDetails) => {
+                  return { ...prevLoginDetails, confirmPassword: e.target.value };
+                })
+              }
+            />
+            {responseText.confirmPassword && (
+              <Alert variant="danger">{responseText.confirmPassword}</Alert>
+            )}
+            {responseText.passwordLength && (
+              <Alert variant="danger">{responseText.passwordLength}</Alert>
+            )}
+          </Form.Group>
 
-        {/* Signup button */}
-        <Button
-          className="w-100"
-          type="submit"
-          onClick={(e) => {
-            e.preventDefault();
-            return loginApi();
-          }}
-        >
-          Signup
-        </Button>
-      </Form>
+          {/* Signup button */}
+          <Button
+            className=""
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              return loginApi();
+            }}
+          >
+            Signup
+          </Button>
+        </Form>
 
-      {/* Signup response text */}
-      {/* {responseText && (
+        {/* Signup response text */}
+        {/* {responseText && (
         <div>
           <p> {responseText} </p>
         </div>
       )} */}
-    </div>
+      </div>
+    </>
   );
 }

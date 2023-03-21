@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
+import Dropdown from "react-bootstrap/Dropdown";
 
 export default function Profile(props) {
   const { ifLoggedIn } = props;
@@ -71,41 +72,62 @@ export default function Profile(props) {
       {ifLoggedIn && (
         <div className="profile-container">
           <h1>Profile</h1>
-          <hr />
-          <h3>
-            Username: <span className="text-dark">{profileData.userName}</span>
-          </h3>
-          <hr />
-          <h3>Profile picture</h3>
-          <img
-            src={profileData.profileImage}
-            alt=""
-            style={{ width: "60px", height: "60px", borderRadius: "100%" }}
-          />
-          <br />
-          <Button onClick={setProfilePicture}>Add new profile picture</Button>
-          <hr />
-          <h3>Chose profile name color</h3>
-          {/* profileColor */}
-          <ul className="list-group d-flex flex-row list-group-flush">
-            {profileColors.map((element, index) => {
-              return (
-                <li
-                  key={index}
-                  className={`list-group-item ${
-                    element === profileData.profileColor ? "active" : ""
-                  }`}
-                  onClick={() =>
-                    setProfileData((prevData) => {
-                      return { ...prevData, profileColor: element };
-                    })
-                  }
-                >
-                  {element}
-                </li>
-              );
-            })}
-          </ul>
+          <div className="d-flex flex-row" style={{ gap: "10px" }}>
+            <div className="w-100">
+              <h3>User settings</h3>
+              <hr />
+              <div className="d-flex flex-column gap-2">
+                <p>
+                  Username: <span>{profileData.userName}</span>
+                </p>
+                <Button style={{ width: "fit-content" }}>Change username</Button>
+                <Button style={{ width: "fit-content" }}>Change password</Button>
+              </div>
+            </div>
+
+            <div className="w-100">
+              <h3>Personalise</h3>
+              <hr />
+              <div className="d-flex flex-column gap-1">
+                <p>Profile picture</p>
+                <img
+                  src={profileData.profileImage}
+                  alt=""
+                  style={{ width: "60px", height: "60px", borderRadius: "100%" }}
+                />
+                <Button style={{ width: "fit-content" }} onClick={setProfilePicture}>
+                  Add new profile picture
+                </Button>
+              </div>
+              <br />
+              <div>
+                <p>Chose profile name color</p>
+                {/* profileColor */}
+                <Dropdown>
+                  <Dropdown.Toggle>
+                    {profileData?.profileColor ? profileData?.profileColor : "black"}
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    {profileColors.map((element, index) => {
+                      return (
+                        <Dropdown.Item
+                          onClick={() =>
+                            setProfileData((prevData) => {
+                              return { ...prevData, profileColor: element };
+                            })
+                          }
+                        >
+                          {element}
+                        </Dropdown.Item>
+                      );
+                    })}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+            </div>
+          </div>
+
           <hr />
           <h3>Chat preview</h3>
           <div className="Chat-message">
@@ -118,7 +140,7 @@ export default function Profile(props) {
               <p style={{ color: profileData.profileColor }}>{profileData.userName}</p>
               <p className="date text-body">Fri Mar 10 2023</p>
             </Stack>
-            <p className="text-light">{">"} This is a post</p>
+            <p>This is a post</p>
           </div>
           <hr />
           <Button onClick={updateProfile}>Update Profile</Button>

@@ -52,52 +52,53 @@ export default function Login(props) {
   }
 
   return (
-    <div className="form_container">
-      {/* Login form */}
-      <Form className="form">
-        <h1 className="form_title">Log in</h1>
+    <>
+      <h1 className="form_title">Log in</h1>
+      <div className="form_container">
+        {/* Login form */}
+        <Form className="form">
+          <Form.Group className="mb-3" controlId="formUsername">
+            <Form.Label>Username</Form.Label>
+            <Form.Control
+              type="username"
+              placeholder="Enter username"
+              className="py-3 mb-2"
+              onChange={(e) =>
+                setLoginDetails((prevLoginDetails) => {
+                  return { ...prevLoginDetails, username: e.target.value };
+                })
+              }
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Enter password"
+              className="py-3 mb-2"
+              onChange={(e) =>
+                setLoginDetails((prevLoginDetails) => {
+                  return { ...prevLoginDetails, password: e.target.value };
+                })
+              }
+            />
+          </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formUsername">
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type="username"
-            placeholder="Enter username"
-            className="py-3 mb-2"
-            onChange={(e) =>
-              setLoginDetails((prevLoginDetails) => {
-                return { ...prevLoginDetails, username: e.target.value };
-              })
-            }
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Enter password"
-            className="py-3 mb-2"
-            onChange={(e) =>
-              setLoginDetails((prevLoginDetails) => {
-                return { ...prevLoginDetails, password: e.target.value };
-              })
-            }
-          />
-        </Form.Group>
+          {/* Login from response text */}
+          {responseText && <Alert variant="danger">{responseText}</Alert>}
 
-        {/* Login from response text */}
-        {responseText && <Alert variant="danger">{responseText}</Alert>}
-
-        <Button
-          className="w-100"
-          type="submit"
-          onClick={(e) => {
-            e.preventDefault();
-            return loginApi();
-          }}
-        >
-          Login
-        </Button>
-      </Form>
-    </div>
+          <Button
+            className=""
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              return loginApi();
+            }}
+          >
+            Login
+          </Button>
+        </Form>
+      </div>
+    </>
   );
 }
