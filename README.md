@@ -13,3 +13,8 @@
  
  Currently developing:
  - Reply to post feature
+ - Darkmode / lightmode
+ - Username change
+ - Password change
+ - Like / dislike feauture
+ 
