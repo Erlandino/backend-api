@@ -99,15 +99,55 @@ module.exports = function (app) {
           post: req.body.post,
           date: req.body.date,
         });
+        console.log(post);
 
         post.save((err) => {
           res.send({ message: "post was registered successfully!" });
         });
         const updatePosts = await Post.updateMany(
           { username: user.username },
-          { profileImage: user.profileImage },
+          { profileImage: user.profileImage, profileColor: req.body.profileColor },
           { upsert: true }
         );
+      } else {
+        res.status(400).send({ message: "User currently not logged in" });
+      }
+    });
+  });
+  // myBookSchema.findOne({ "publisherId: publisherId", "books.bookId": bookId,}, {"books.$": 1})
+
+  // User replies to a comment api
+  app.post("/api/auth/reply", [verifyToken], (req, res, next) => {
+    User.findOne({ _id: req.userId }, async (err, user) => {
+      if (user) {
+        const originalPost = await Post.findOne({ _id: req.body.replyId });
+        console.log(originalPost);
+        if (!originalPost) {
+          res.status(400).send({ message: "The post you are trying to reply to does not exist" });
+        } else {
+          const newReplyPost = new Post({
+            username: user.username,
+            post: req.body.post,
+            date: req.body.date,
+          });
+
+          const replyPostArray = [...originalPost.replyPost];
+          replyPostArray.push(newReplyPost);
+
+          const updateProfile = await Post.findOneAndUpdate(
+            { _id: req.body.replyId },
+            { replyPost: replyPostArray },
+            { upsert: true, new: true }
+          );
+
+          const updatePosts = await Post.updateMany(
+            { username: user.username },
+            { profileImage: user.profileImage },
+            { upsert: true }
+          );
+
+          res.status(200).send({ message: "Reply posted" });
+        }
       } else {
         res.status(400).send({ message: "User currently not logged in" });
       }

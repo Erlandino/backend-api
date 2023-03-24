@@ -9,6 +9,7 @@ const Post = mongoose.model(
     date: String,
     profileImage: String,
     profileColor: String,
+    replyPost: Array,
   })
 );
 
