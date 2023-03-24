@@ -12,19 +12,33 @@ import MainNavbar from "./components/MainNavbar";
 // main component
 function App() {
   const [ifLoggedIn, setIfLoggedIn] = useState(false);
+  const [theme, setTheme] = useState("light");
 
   return (
     <main className="App">
       <MainNavbar ifLoggedIn={ifLoggedIn} setIfLoggedIn={setIfLoggedIn} />
 
       <Routes>
-        <Route path="/" element={<Home ifLoggedIn={ifLoggedIn} />} />
-        <Route path="/Signup" element={<Signup />} />
+        <Route
+          path="/"
+          element={<Home ifLoggedIn={ifLoggedIn} theme={theme} setTheme={setTheme} />}
+        />
+        <Route path="/Signup" element={<Signup theme={theme} setTheme={setTheme} />} />
         <Route
           path="/Login"
-          element={<Login setIfLoggedIn={setIfLoggedIn} ifLoggedIn={ifLoggedIn} />}
+          element={
+            <Login
+              setIfLoggedIn={setIfLoggedIn}
+              ifLoggedIn={ifLoggedIn}
+              theme={theme}
+              setTheme={setTheme}
+            />
+          }
         />
-        <Route path="/Profile" element={<Profile ifLoggedIn={ifLoggedIn} />} />
+        <Route
+          path="/Profile"
+          element={<Profile ifLoggedIn={ifLoggedIn} theme={theme} setTheme={setTheme} />}
+        />
       </Routes>
     </main>
   );

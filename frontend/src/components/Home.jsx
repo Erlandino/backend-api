@@ -1,4 +1,5 @@
 // Imports
+import { loader } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useState, useEffect, useRef } from "react";
@@ -18,6 +19,8 @@ export default function Home(props) {
   const [allPosts, setAllPosts] = useState(null);
   const [postsAmount, setPostsAmount] = useState(null);
   const [offset, setOffset] = useState(0);
+  const [reply, setReply] = useState(null);
+  const [replyData, setReplyData] = useState(null);
 
   // Posts comments to api and api to database
   async function postApi() {
@@ -45,6 +48,33 @@ export default function Home(props) {
     }
   }
 
+  async function replyToPostApi(replyId) {
+    // gets current date and puts it in a neat string format
+    const date = new Date().toDateString();
+
+    // sends post to api to store in database
+    const res = await fetch("http://localhost:9000/api/auth/reply", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ post: replyData, date: date, replyId: replyId }),
+    });
+
+    const data = await res.json();
+    console.log(data);
+    // Puts login response in the class responseText div
+    if (res.ok) {
+      /* if correct username/password*/
+      setResponseText((_prevState) => "Post successfully posted");
+      getCommentsApi();
+    } else {
+      /* if incorrect username/password*/
+      setResponseText((_prevState) => "Something went wrong");
+    }
+  }
+
   // async function, sends get request to api link and receives comments and posts ammount from database
   async function getCommentsApi() {
     // fetch request
@@ -61,8 +91,6 @@ export default function Home(props) {
     // converts json object to js
     let data = await res.json();
 
-    // console.log(data);
-
     // stores comments and posts amount in states
     setAllPosts((_prevPosts) => data.posts);
     setPostsAmount((_prevPosts) => data.totalPosts);
@@ -77,6 +105,107 @@ export default function Home(props) {
     postsRef.current.scrollTop = 0;
   }
 
+  function postLayout(element, index) {
+    return (
+      <>
+        <Stack className="d-flex flex-row" gap={3}>
+          <img
+            src={element.profileImage}
+            alt=""
+            style={{ width: "60px", height: "60px", borderRadius: "100%" }}
+          />
+          <div className="dateAndName d-flex flex-column">
+            <p className="" style={{ color: element.profileColor }}>
+              {element.username}
+            </p>
+            <p className="date text-body">{element.date}</p>
+          </div>
+        </Stack>
+        <p>{element.post}</p>
+        <div className="d-flex flex-row justify-content-between">
+          <div className="d-flex gap-1">
+            <Button
+              onClick={() =>
+                setReply((prevReply) => {
+                  return prevReply === element._id ? null : element._id;
+                })
+              }
+            >
+              Reply
+            </Button>
+            <Button variant="success">Like</Button>
+            <Button variant="danger">Dislike</Button>
+          </div>
+          <div className="d-flex gap-1">
+            <Button variant="success">0</Button>
+            <Button variant="danger">0</Button>
+          </div>
+        </div>
+
+        {/* reply to post */}
+        <div
+          className="mt-2 w-75 align-self-center"
+          style={{ display: reply === element._id ? "block" : "none" }}
+        >
+          {/* Response Text */}
+          {responseText && <p className="responseText">{responseText}</p>}
+          {/* Post comment form */}
+          <Form className="frontPage_form">
+            {/* User comment input */}
+            <Form.Group controlId="formUsername">
+              <Form.Control
+                type="post"
+                disabled={!ifLoggedIn}
+                placeholder="Write here"
+                as="textarea"
+                rows={3}
+                onChange={(e) => setReplyData((_prevState) => e.target.value)}
+              />
+            </Form.Group>
+            {/* Posts comment in input */}
+            <Button
+              disabled={!ifLoggedIn}
+              className="post-button"
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                return replyToPostApi(element._id);
+              }}
+            >
+              Post
+            </Button>
+          </Form>
+        </div>
+      </>
+    );
+  }
+
+  function repliesToPost(array) {
+    return array.map((element, index) => {
+      if (element.replyPost.length > 0) {
+        postsMapping(element.replyPost);
+      }
+      return (
+        <div style={{ width: "80%", marginTop: "20px" }} className="align-self-center">
+          {postLayout(element, index)}
+        </div>
+      );
+    });
+  }
+
+  function postsMapping(element, index) {
+    return (
+      <div key={index} className="Chat-message">
+        {postLayout(element, index)}
+
+        {/* replies */}
+        {repliesToPost(element.replyPost)}
+      </div>
+    );
+  }
+
+  console.log(allPosts);
+
   // jsx
   return (
     // main container
@@ -84,36 +213,36 @@ export default function Home(props) {
       {/* Title */}
       <h1 className="frontPage_title">Chat</h1>
 
-      {/* Response Text */}
-      {responseText && <p className="responseText">{responseText}</p>}
-
-      {/* Post comment form */}
-      <Form className="frontPage_form">
-        {/* User comment input */}
-        <Form.Group className="mb-3" controlId="formUsername">
-          <Form.Control
-            type="post"
+      <div>
+        {/* Response Text */}
+        {responseText && <p className="responseText">{responseText}</p>}
+        {/* Post comment form */}
+        <Form className="frontPage_form">
+          {/* User comment input */}
+          <Form.Group className="mb-3" controlId="formUsername">
+            <Form.Control
+              type="post"
+              disabled={!ifLoggedIn}
+              placeholder="Write here"
+              as="textarea"
+              rows={3}
+              onChange={(e) => setPostData((_prevState) => e.target.value)}
+            />
+          </Form.Group>
+          {/* Posts comment in input */}
+          <Button
             disabled={!ifLoggedIn}
-            placeholder="Write here"
-            as="textarea"
-            rows={3}
-            onChange={(e) => setPostData((_prevState) => e.target.value)}
-          />
-        </Form.Group>
-
-        {/* Posts comment in input */}
-        <Button
-          disabled={!ifLoggedIn}
-          className="post-button"
-          type="submit"
-          onClick={(e) => {
-            e.preventDefault();
-            return postApi();
-          }}
-        >
-          Post
-        </Button>
-      </Form>
+            className="post-button"
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              return postApi();
+            }}
+          >
+            Post
+          </Button>
+        </Form>
+      </div>
 
       {/* Posts */}
       {allPosts && (
@@ -125,24 +254,7 @@ export default function Home(props) {
           >
             {/* Maps trough comments from api call */}
             {allPosts.map((element, index) => {
-              return (
-                <div key={index} className="Chat-message">
-                  <Stack className="d-flex flex-row" gap={3}>
-                    <img
-                      src={element.profileImage}
-                      alt=""
-                      style={{ width: "60px", height: "60px", borderRadius: "100%" }}
-                    />
-                    <div className="dateAndName d-flex flex-column">
-                      <p className="" style={{ color: element.profileColor }}>
-                        {element.username}
-                      </p>
-                      <p className="date text-body">{element.date}</p>
-                    </div>
-                  </Stack>
-                  <p>{element.post}</p>
-                </div>
-              );
+              return postsMapping(element, index);
             })}
           </div>
 
