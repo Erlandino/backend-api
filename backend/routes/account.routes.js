@@ -60,17 +60,23 @@ module.exports = function (app) {
 
   // VerifyToken route
   app.get("/verifyToken", [verifyToken], (req, res, next) => {
-    res.status(200).send({ message: "Account verified!" });
+    res.status(200).send({ message: "Account verified!", token: true });
   });
 
   // Get Profile route
   app.get("/api/auth/profile", [verifyToken], (req, res, next) => {
     User.findOne({ _id: req.userId }, function (err, user) {
-      res.status(200).send({
-        userName: user.username,
-        profileImage: user.profileImage,
-        profileColor: user.profileColor,
-      });
+      if (user) {
+        res.status(200).send({
+          message: "Account verified!",
+          token: true,
+          userName: user.username,
+          profileImage: user.profileImage,
+          profileColor: user.profileColor,
+        });
+      } else {
+        res.status(400).send({ message: "Bad token", token: false });
+      }
     });
   });
 
