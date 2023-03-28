@@ -1,14 +1,30 @@
 // Imports
-import { loader } from "react-router-dom";
+import { useLoaderData, defer, Await, Link, useParams, redirect } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import Stack from "react-bootstrap/Stack";
+import getInitialCommentsApi from "../utils/getComments";
+
+// Loader
+export function loader({ params }) {
+  if (isNaN(params.offset)) {
+    return redirect("/0");
+  } else {
+    const commentsFetch = getInitialCommentsApi(params.offset);
+    return defer({ commentsPromise: commentsFetch });
+  }
+}
 
 // Component
 export default function Home(props) {
   // props
   const { ifLoggedIn } = props;
+
+  // loader
+  const loaderData = useLoaderData();
+
+  loaderData.commentsPromise.then((res) => setPostsAmount(res.totalPosts));
 
   // useRef
   const postsRef = useRef();
@@ -16,11 +32,11 @@ export default function Home(props) {
   // usestates
   const [postData, setPostData] = useState("");
   const [responseText, setResponseText] = useState(null);
-  const [allPosts, setAllPosts] = useState(null);
-  const [postsAmount, setPostsAmount] = useState(null);
-  const [offset, setOffset] = useState(0);
+  const [postsAmount, setPostsAmount] = useState(100);
   const [reply, setReply] = useState(null);
   const [replyData, setReplyData] = useState(null);
+
+  const { offset } = useParams();
 
   // Posts comments to api and api to database
   async function postApi() {
@@ -41,7 +57,7 @@ export default function Home(props) {
     if (res.ok) {
       /* if correct username/password*/
       setResponseText((_prevState) => "Post successfully posted");
-      getCommentsApi();
+      // getCommentsApi();
     } else {
       /* if incorrect username/password*/
       setResponseText((_prevState) => "Something went wrong");
@@ -68,41 +84,11 @@ export default function Home(props) {
     if (res.ok) {
       /* if correct username/password*/
       setResponseText((_prevState) => "Post successfully posted");
-      getCommentsApi();
+      // getCommentsApi();
     } else {
       /* if incorrect username/password*/
       setResponseText((_prevState) => "Something went wrong");
     }
-  }
-
-  // async function, sends get request to api link and receives comments and posts ammount from database
-  async function getCommentsApi() {
-    // fetch request
-    const res = await fetch(
-      `http://localhost:9000/api/auth/user-comments?limit=10&offset=${offset}`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    // converts json object to js
-    let data = await res.json();
-
-    // stores comments and posts amount in states
-    setAllPosts((_prevPosts) => data.posts);
-    setPostsAmount((_prevPosts) => data.totalPosts);
-  }
-
-  // useEffect, content will only run on component mount and offset state change,
-  useEffect(() => {
-    getCommentsApi();
-  }, [offset]);
-
-  function scrollToTopPosts() {
-    postsRef.current.scrollTop = 0;
   }
 
   function postLayout(element, index) {
@@ -186,25 +172,31 @@ export default function Home(props) {
         postsMapping(element.replyPost);
       }
       return (
-        <div style={{ width: "80%", marginTop: "20px" }} className="align-self-center">
+        <div
+          key={element._id}
+          style={{ width: "80%", marginTop: "20px" }}
+          className="align-self-center"
+        >
           {postLayout(element, index)}
         </div>
       );
     });
   }
 
-  function postsMapping(element, index) {
-    return (
-      <div key={index} className="Chat-message">
-        {postLayout(element, index)}
+  function postsMapping(posts) {
+    // setPostsAmount((prevState) => posts.totalPosts);
+    /* Maps trough comments from api call */
+    return posts.posts.map((element, index) => {
+      return (
+        <div key={index} className="Chat-message">
+          {postLayout(element, index)}
 
-        {/* replies */}
-        {repliesToPost(element.replyPost)}
-      </div>
-    );
+          {/* replies */}
+          {repliesToPost(element.replyPost)}
+        </div>
+      );
+    });
   }
-
-  console.log(allPosts);
 
   // jsx
   return (
@@ -244,48 +236,56 @@ export default function Home(props) {
         </Form>
       </div>
 
+      {/* // loaderData commentsPromise */}
+
       {/* Posts */}
-      {allPosts && (
-        <>
-          <div
-            className="frontPage_posts p-2 d-flex flex-column justify-content-between"
-            style={{ height: "100%" }}
-            ref={postsRef}
-          >
-            {/* Maps trough comments from api call */}
-            {allPosts.map((element, index) => {
-              return postsMapping(element, index);
-            })}
-          </div>
+      <div
+        className="frontPage_posts p-2 d-flex flex-column justify-content-between"
+        style={{ height: "100%" }}
+        ref={postsRef}
+      >
+        <Suspense
+          fallback={
+            <div className="h-100 d-flex flex-column justify-content-center align-items-center">
+              <div className="loader-Icon"></div>
+              <h1>Loading</h1>
+            </div>
+          }
+        >
+          <Await resolve={loaderData.commentsPromise}>{postsMapping}</Await>
+        </Suspense>
+      </div>
 
-          {/* Buttons to navigate trough more comments */}
-          <div className="d-flex flex-row justify-content-between my-2">
-            {/* Newer posts */}
-            <Button
-              disabled={offset <= 0}
-              className=""
-              onClick={() => {
-                setOffset((prevState) => prevState - 10);
-                scrollToTopPosts();
-              }}
-            >
-              Newer posts
-            </Button>
+      {/* Buttons to navigate trough more comments */}
+      <div className="d-flex flex-row justify-content-between my-2">
+        {/* Newer posts */}
+        <Button
+          disabled={offset <= 0}
+          className="p-0"
+          // onClick={() => {
+          //   getCommentsApi(-10);
+          //   scrollToTopPosts();
+          // }}
+        >
+          <Link to={`/${Number(offset) - 10}`} className="offset_button text-light">
+            Newer posts
+          </Link>
+        </Button>
 
-            {/* Older posts */}
-            <Button
-              disabled={offset >= postsAmount}
-              className=""
-              onClick={() => {
-                setOffset((prevState) => prevState + 10);
-                scrollToTopPosts();
-              }}
-            >
-              Older posts
-            </Button>
-          </div>
-        </>
-      )}
+        {/* Older posts */}
+        <Button
+          disabled={Number(offset) + 10 >= postsAmount}
+          className="p-0"
+          // onClick={() => {
+          //   getCommentsApi(+10);
+          //   scrollToTopPosts();
+          // }}
+        >
+          <Link to={`/${Number(offset) + 10}`} className="offset_button text-light">
+            Older posts
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }

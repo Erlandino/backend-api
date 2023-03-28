@@ -1,39 +1,31 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLoaderData } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import Dropdown from "react-bootstrap/Dropdown";
 
+export function loader() {
+  return fetch("http://localhost:9000/api/auth/profile", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 export default function Profile(props) {
+  // props
   const { ifLoggedIn } = props;
 
+  // Loader
+  const tokenChecker = useLoaderData();
+
   // useState
-  const [profileData, setProfileData] = useState({
-    userName: "",
-    profileImage: "",
-    profileColor: "black",
-  });
+  const [profileData, setProfileData] = useState(tokenChecker);
 
   // useNavigate
   const navigate = useNavigate();
-
-  // async func
-  async function tokenChecker() {
-    const res = await fetch("http://localhost:9000/api/auth/profile", {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    let data = await res.json();
-
-    if (res.ok) {
-      setProfileData((prevState) => data);
-    } else {
-    }
-  }
 
   async function updateProfile() {
     await fetch("http://localhost:9000/api/auth/profile", {
@@ -45,10 +37,6 @@ export default function Profile(props) {
       body: JSON.stringify(profileData),
     });
   }
-
-  useEffect(() => {
-    tokenChecker();
-  }, []);
 
   useEffect(() => {
     if (!ifLoggedIn) navigate("/Login");
@@ -112,6 +100,7 @@ export default function Profile(props) {
                     {profileColors.map((element, index) => {
                       return (
                         <Dropdown.Item
+                          key={index}
                           onClick={() =>
                             setProfileData((prevData) => {
                               return { ...prevData, profileColor: element };
