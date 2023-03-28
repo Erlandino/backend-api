@@ -2,7 +2,7 @@
 import { useLoaderData, defer, Await, Link, useParams, redirect } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, Suspense, useEffect } from "react";
 import Stack from "react-bootstrap/Stack";
 import getInitialCommentsApi from "../utils/getComments";
 
@@ -24,19 +24,27 @@ export default function Home(props) {
   // loader
   const loaderData = useLoaderData();
 
-  loaderData.commentsPromise.then((res) => setPostsAmount(res.totalPosts));
-
   // useRef
   const postsRef = useRef();
 
   // usestates
   const [postData, setPostData] = useState("");
   const [responseText, setResponseText] = useState(null);
-  const [postsAmount, setPostsAmount] = useState(100);
   const [reply, setReply] = useState(null);
   const [replyData, setReplyData] = useState(null);
+  const [postsAmount, setPostsAmount] = useState(null);
 
+  // useParams
   const { offset } = useParams();
+
+  async function totalPostsAmount(promise) {
+    const posts = await promise;
+    setPostsAmount((prevStat) => posts.totalPosts);
+  }
+
+  useEffect(() => {
+    totalPostsAmount(loaderData.commentsPromise);
+  }, []);
 
   // Posts comments to api and api to database
   async function postApi() {
@@ -56,11 +64,11 @@ export default function Home(props) {
     // Puts login response in the class responseText div
     if (res.ok) {
       /* if correct username/password*/
-      setResponseText((_prevState) => "Post successfully posted");
+      setResponseText((prevState) => "Post successfully posted");
       // getCommentsApi();
     } else {
       /* if incorrect username/password*/
-      setResponseText((_prevState) => "Something went wrong");
+      setResponseText((prevState) => "Something went wrong");
     }
   }
 
@@ -236,8 +244,6 @@ export default function Home(props) {
         </Form>
       </div>
 
-      {/* // loaderData commentsPromise */}
-
       {/* Posts */}
       <div
         className="frontPage_posts p-2 d-flex flex-column justify-content-between"
@@ -259,28 +265,14 @@ export default function Home(props) {
       {/* Buttons to navigate trough more comments */}
       <div className="d-flex flex-row justify-content-between my-2">
         {/* Newer posts */}
-        <Button
-          disabled={offset <= 0}
-          className="p-0"
-          // onClick={() => {
-          //   getCommentsApi(-10);
-          //   scrollToTopPosts();
-          // }}
-        >
+        <Button disabled={offset <= 0} className="p-0">
           <Link to={`/${Number(offset) - 10}`} className="offset_button text-light">
             Newer posts
           </Link>
         </Button>
 
         {/* Older posts */}
-        <Button
-          disabled={Number(offset) + 10 >= postsAmount}
-          className="p-0"
-          // onClick={() => {
-          //   getCommentsApi(+10);
-          //   scrollToTopPosts();
-          // }}
-        >
+        <Button disabled={Number(offset) + 10 >= postsAmount} className="p-0">
           <Link to={`/${Number(offset) + 10}`} className="offset_button text-light">
             Older posts
           </Link>

@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLoaderData } from "react-router-dom";
+import { useLoaderData, redirect } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import Dropdown from "react-bootstrap/Dropdown";
 
-export function loader() {
-  return fetch("http://localhost:9000/api/auth/profile", {
+export async function loader() {
+  const profileDataFetch = await fetch("http://localhost:9000/api/auth/profile", {
     method: "GET",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
   });
+  const profileData = await profileDataFetch.json();
+
+  console.log(profileData);
+  if (!profileData.token) {
+    return redirect("/login");
+  } else {
+    return profileData;
+  }
 }
 
 export default function Profile(props) {
@@ -24,9 +32,6 @@ export default function Profile(props) {
   // useState
   const [profileData, setProfileData] = useState(tokenChecker);
 
-  // useNavigate
-  const navigate = useNavigate();
-
   async function updateProfile() {
     await fetch("http://localhost:9000/api/auth/profile", {
       method: "Post",
@@ -38,10 +43,6 @@ export default function Profile(props) {
     });
   }
 
-  useEffect(() => {
-    if (!ifLoggedIn) navigate("/Login");
-  }, [ifLoggedIn]);
-
   function setProfilePicture() {
     const newImg = prompt("Enter image url");
     if (newImg) {
@@ -52,8 +53,6 @@ export default function Profile(props) {
   }
 
   const profileColors = ["Blue", "Red", "Green", "Yellow", "Purple", "Pink", "Black"];
-
-  console.log(profileData.profileColor);
 
   return (
     <>

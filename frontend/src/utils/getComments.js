@@ -10,7 +10,7 @@ export default async function getInitialCommentsApi(offset) {
     }
   );
   // converts json object to js
-  let data = await res.json();
+  const data = await res.json();
 
   return data;
 }
