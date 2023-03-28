@@ -157,16 +157,17 @@ module.exports = function (app) {
   // retrieves a set amount of comments from database api
   app.get("/api/auth/user-comments", (req, res, next) => {
     const { limit, offset } = req.query;
-
-    // username
-
-    Post.countDocuments((err, count) => {
-      Post.find({}, function (err, posts) {
-        res.send({ posts: posts, totalPosts: count });
-      })
-        .skip(offset)
-        .sort({ _id: -1 })
-        .limit(limit);
-    });
+    if (isNaN(offset)) {
+      res.status(400).send({ message: "Offset need to be numbers" });
+    } else {
+      Post.countDocuments((err, count) => {
+        Post.find({}, function (err, posts) {
+          res.send({ posts: posts, totalPosts: count });
+        })
+          .skip(offset)
+          .sort({ _id: -1 })
+          .limit(limit);
+      });
+    }
   });
 };
