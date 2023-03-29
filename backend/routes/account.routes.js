@@ -28,7 +28,7 @@ module.exports = function (app) {
 
     // sends the object to database
     user.save((err) => {
-      res.send({ message: "User was registered successfully!" });
+      res.status(201).send({ message: "User was registered successfully!" });
     });
   });
 
@@ -47,7 +47,7 @@ module.exports = function (app) {
         req.session.token = token;
         res.status(200).send({ message: "Logged in successfully" });
       } else {
-        res.status(400).send({ message: "Failed! Wrong username!" });
+        res.status(401).send({ message: "Failed! Wrong username!" });
       }
     });
   });
@@ -75,24 +75,32 @@ module.exports = function (app) {
           profileColor: user.profileColor,
         });
       } else {
-        res.status(400).send({ message: "Bad token", token: false });
+        res.status(401).send({ message: "Bad token", token: false });
       }
     });
   });
 
   // Post Profile route
   app.post("/api/auth/profile", [verifyToken], async (req, res, next) => {
-    const updateProfile = await User.findOneAndUpdate(
-      { _id: req.userId },
-      { profileImage: req.body.profileImage, profileColor: req.body.profileColor },
-      { upsert: true, new: true }
-    );
     User.findOne({ _id: req.userId }, async function (err, user) {
-      const updatePosts = await Post.updateMany(
-        { username: user.username },
-        { profileImage: req.body.profileImage, profileColor: req.body.profileColor },
-        { upsert: true }
-      );
+      if (user) {
+        console.log(req.body);
+        const updatePosts = await Post.updateMany(
+          { username: user.username },
+          { profileImage: req.body.profileImage, profileColor: req.body.profileColor },
+          { upsert: true }
+        );
+
+        const updateProfile = await User.findOneAndUpdate(
+          { _id: req.userId },
+          { profileImage: req.body.profileImage, profileColor: req.body.profileColor },
+          { upsert: true, new: true }
+        );
+
+        res.status(200).send({ message: "Account was updated!" });
+      } else {
+        res.status(401).send({ message: "Bad token" });
+      }
     });
   });
 
@@ -104,17 +112,12 @@ module.exports = function (app) {
           username: user.username,
           post: req.body.post,
           date: req.body.date,
+          profileImage: user.profileImage,
+          profileColor: user.profileColor,
         });
-        console.log(post);
-
         post.save((err) => {
-          res.send({ message: "post was registered successfully!" });
+          res.status(201).send({ message: "post was registered successfully!" });
         });
-        const updatePosts = await Post.updateMany(
-          { username: user.username },
-          { profileImage: user.profileImage, profileColor: req.body.profileColor },
-          { upsert: true }
-        );
       } else {
         res.status(400).send({ message: "User currently not logged in" });
       }
@@ -126,7 +129,10 @@ module.exports = function (app) {
   app.post("/api/auth/reply", [verifyToken], (req, res, next) => {
     User.findOne({ _id: req.userId }, async (err, user) => {
       if (user) {
+        console.log(typeof req.body.replyId);
+
         const originalPost = await Post.findOne({ _id: req.body.replyId });
+
         console.log(originalPost);
         if (!originalPost) {
           res.status(400).send({ message: "The post you are trying to reply to does not exist" });
@@ -135,27 +141,37 @@ module.exports = function (app) {
             username: user.username,
             post: req.body.post,
             date: req.body.date,
+            profileImage: user.profileImage,
+            profileColor: user.profileColor,
           });
 
-          const replyPostArray = [...originalPost.replyPost];
-          replyPostArray.push(newReplyPost);
+          console.log("Original post: " + originalPost);
+          console.log("New reply post: " + newReplyPost);
+          // const replyPostArray = [...originalPost.replyPost];
+          originalPost.replyPost.push(newReplyPost);
 
-          const updateProfile = await Post.findOneAndUpdate(
-            { _id: req.body.replyId },
-            { replyPost: replyPostArray },
-            { upsert: true, new: true }
-          );
+          console.log("Updated original post: " + originalPost);
 
-          const updatePosts = await Post.updateMany(
-            { username: user.username },
-            { profileImage: user.profileImage },
-            { upsert: true }
-          );
+          originalPost.save((err) => {
+            res.status(201).send({ message: "Reply posted!" });
+          });
 
-          res.status(200).send({ message: "Reply posted" });
+          // const updateProfile = await Post.findOneAndUpdate(
+          //   { _id: req.body.replyId },
+          //   { replyPost: replyPostArray },
+          //   { upsert: true, new: true }
+          // );
+
+          // const updatePosts = await Post.updateMany(
+          //   { username: user.username },
+          //   { profileImage: user.profileImage },
+          //   { upsert: true }
+          // );
+
+          // res.status(201).send({ message: "Reply posted" });
         }
       } else {
-        res.status(400).send({ message: "User currently not logged in" });
+        res.status(401).send({ message: "User currently not logged in" });
       }
     });
   });
@@ -174,6 +190,7 @@ module.exports = function (app) {
           .sort({ _id: -1 })
           .limit(limit);
       });
+      // res.status(200).send({ message: "Comments sent" });
     }
   });
 };
