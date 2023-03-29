@@ -34,7 +34,6 @@ export default function Signup() {
 
     // response data
     let data = await res.json();
-    console.log(data);
 
     // Puts login response in the class responseText div
     if (res.ok) {
@@ -46,7 +45,6 @@ export default function Signup() {
       setResponseText((prevState) => data);
     }
   }
-  console.log(responseText.username);
   return (
     <>
       <h1 className="form_title">Sign up</h1>

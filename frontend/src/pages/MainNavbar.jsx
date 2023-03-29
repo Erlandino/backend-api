@@ -1,34 +1,30 @@
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { useEffect } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLoaderData } from "react-router-dom";
+import checkToken from "../utils/checkToken";
+
+export async function loader() {
+  const ifTokenValid = await checkToken();
+  return ifTokenValid;
+}
 
 export default function MainNavbar(props) {
   const { setIfLoggedIn, ifLoggedIn } = props;
 
-  async function tokenChecker() {
-    const res = await fetch("http://localhost:9000/verifyToken", {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(),
-    });
+  const { token } = useLoaderData();
 
-    if (res.ok) {
+  useEffect(() => {
+    if (token) {
       setIfLoggedIn((prevState) => true);
     } else {
       setIfLoggedIn((prevState) => false);
     }
-  }
-  useEffect(() => {
-    tokenChecker();
   }, []);
 
   async function signOut() {
     // Login Api communication
-    const res = await fetch("http://localhost:9000/api/auth/signout", {
+    fetch("http://localhost:9000/api/auth/signout", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -36,9 +32,6 @@ export default function MainNavbar(props) {
       },
       body: JSON.stringify(),
     });
-
-    const data = await res;
-    console.log(data);
 
     setIfLoggedIn((prevState) => false);
   }

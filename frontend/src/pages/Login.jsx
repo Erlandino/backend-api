@@ -1,14 +1,22 @@
 // imports
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { redirect } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
+import checkToken from "../utils/checkToken";
+
+export async function loader() {
+  const ifTokenValid = await checkToken();
+  if (ifTokenValid.ok) {
+    return redirect("/profile");
+  } else return null;
+}
 
 // Login component
 export default function Login(props) {
   // Prop destructuring
-  const { setIfLoggedIn, ifLoggedIn } = props;
+  const { setIfLoggedIn } = props;
 
   // useStates
   const [responseText, setResponseText] = useState("");
@@ -16,15 +24,6 @@ export default function Login(props) {
     username: "",
     password: "",
   });
-
-  // useNavigate
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (ifLoggedIn) {
-      navigate("/profile");
-    }
-  }, [ifLoggedIn]);
 
   async function loginApi() {
     // Login Api Post username and password for authentication check
@@ -37,14 +36,10 @@ export default function Login(props) {
       body: JSON.stringify(loginDetails),
     });
 
-    let data = await res.json();
-    // console.log(data);
-
     // Puts login response in the class responseText div
     if (res.ok) {
       /* if correct username/password*/
       setIfLoggedIn((prevState) => true);
-      navigate("/profile");
     } else {
       /* if incorrect username/password*/
       setResponseText((prevState) => "Incorrect account details");

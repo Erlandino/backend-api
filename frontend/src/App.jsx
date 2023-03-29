@@ -4,10 +4,10 @@ import { createHashRouter, RouterProvider } from "react-router-dom";
 
 // components
 import Home, { loader as homeLoader } from "./pages/Home";
-import Login from "./pages/Login";
+import Login, { loader as loginLoader } from "./pages/Login";
 import Profile, { loader as profileLoader } from "./pages/Profile";
 import Signup from "./pages/Sign-up";
-import MainNavbar from "./pages/MainNavbar";
+import MainNavbar, { loader as navbarLoader } from "./pages/MainNavbar";
 
 // main component
 function App() {
@@ -18,6 +18,7 @@ function App() {
     {
       path: "/",
       element: <MainNavbar ifLoggedIn={ifLoggedIn} setIfLoggedIn={setIfLoggedIn} />,
+      loader: navbarLoader,
       children: [
         {
           path: "/",
@@ -43,6 +44,7 @@ function App() {
               setTheme={setTheme}
             />
           ),
+          loader: loginLoader,
         },
         {
           path: "/Profile",

@@ -8,8 +8,5 @@ export default async function tokenChecker() {
     body: JSON.stringify(),
   });
 
-  // converts json object to js
-  const data = await res.json();
-
-  return data;
+  return res;
 }

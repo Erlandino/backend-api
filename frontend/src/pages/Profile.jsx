@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLoaderData, redirect } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
@@ -15,7 +15,7 @@ export async function loader() {
   const profileData = await profileDataFetch.json();
 
   console.log(profileData);
-  if (!profileData.token) {
+  if (!profileDataFetch.ok) {
     return redirect("/login");
   } else {
     return profileData;

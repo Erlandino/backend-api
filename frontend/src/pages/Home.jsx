@@ -1,5 +1,13 @@
 // Imports
-import { useLoaderData, defer, Await, Link, useParams, redirect } from "react-router-dom";
+import {
+  useLoaderData,
+  defer,
+  Await,
+  Link,
+  useParams,
+  redirect,
+  useNavigate,
+} from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useState, useRef, Suspense, useEffect } from "react";
@@ -37,6 +45,9 @@ export default function Home(props) {
   // useParams
   const { offset } = useParams();
 
+  // useNavigate
+  const navigate = useNavigate();
+
   async function totalPostsAmount(promise) {
     const posts = await promise;
     setPostsAmount((prevStat) => posts.totalPosts);
@@ -65,6 +76,7 @@ export default function Home(props) {
     if (res.ok) {
       /* if correct username/password*/
       setResponseText((prevState) => "Post successfully posted");
+      navigate("/offset");
       // getCommentsApi();
     } else {
       /* if incorrect username/password*/
@@ -87,15 +99,16 @@ export default function Home(props) {
     });
 
     const data = await res.json();
-    console.log(data);
+
     // Puts login response in the class responseText div
     if (res.ok) {
       /* if correct username/password*/
-      setResponseText((_prevState) => "Post successfully posted");
+      setResponseText((prevState) => "Post successfully posted");
+      navigate("/offset");
       // getCommentsApi();
     } else {
       /* if incorrect username/password*/
-      setResponseText((_prevState) => "Something went wrong");
+      setResponseText((prevState) => "Something went wrong");
     }
   }
 
@@ -192,7 +205,6 @@ export default function Home(props) {
   }
 
   function postsMapping(posts) {
-    // setPostsAmount((prevState) => posts.totalPosts);
     /* Maps trough comments from api call */
     return posts.posts.map((element, index) => {
       return (
