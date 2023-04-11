@@ -23,25 +23,29 @@
 .App {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  background-color: rgba(14, 174, 87, 1);
-  /* background-color: rgba(12, 116, 117, 1); */
+  height: 100vh;
+}
+
+.list-group-item:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
 }
 
 .responseText {
   text-align: center;
-  color: white;
   margin: 0;
 }
 
 /* Navbar */
 .nav__item__link {
   text-decoration: none;
-  color: black;
   padding: 0 10px;
 }
 .nav__item__link-active {
   font-weight: 500;
+}
+.navbar {
+  background-color: #5fad41;
 }
 /* Navbar end */
 
@@ -53,15 +57,12 @@
   height: 100%;
 }
 .form_title {
-  margin-bottom: 40px;
-  text-align: center;
-  width: 100%;
+  margin: 30px 0 0 30px;
 }
 .form {
   background-color: white;
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0px 0px 10px 0px;
   width: 600px;
 }
 .form-label {
@@ -73,32 +74,65 @@
 
 /* Front page */
 .frontPage_container {
-  padding: 30px 0;
+  padding: 30px 30px;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  height: 100vh;
+  background-color: #e3e3e3;
 }
 .frontPage_title {
-  align-self: center;
-  color: white;
+  color: #363635;
+  margin-bottom: 30px;
 }
 .frontPage_posts {
   overflow: scroll;
   overflow-x: hidden; /* Hide horizontal scrollbar */
-  color: white;
+  border-radius: 0.375rem;
+  background-color: white;
 }
 
 .date {
   font-size: 12px;
   align-self: center;
 }
+.dateAndName * {
+  margin: 0;
+}
+.post-button {
+  background-color: #5fad41;
+  margin-bottom: 10px;
+}
+
+.loader-Icon {
+  width: 100px;
+  height: 100px;
+  border: 10px solid rgb(208, 208, 208);
+  border-top: 10px solid blue;
+  border-radius: 50%;
+  animation: loaderAnimation 1s linear infinite;
+}
+
+@keyframes loaderAnimation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.offset_button {
+  display: block;
+  text-decoration: none;
+  padding: 0.375rem 0.75rem;
+}
 /* Front page end */
 
 /* Profile page */
 .profile-container {
-  color: white;
   padding: 30px;
 }
 .Chat-message {
@@ -107,6 +141,5 @@
   justify-content: center;
   border-radius: 5px;
   padding: 10px;
-  background-color: rgba(255, 255, 255, 0.273);
   margin: 10px;
 }

@@ -4,7 +4,7 @@ function verifyToken(req, res, next) {
 
   // if no token is present (user not logged in)
   if (!token) {
-    res.status(401).send({ message: "Failed! No token provided!" });
+    res.status(401).send({ message: "Failed! No token provided!", token: false });
 
     // if token is present
   }
@@ -14,7 +14,7 @@ function verifyToken(req, res, next) {
       if (err) {
         // if its not valid
 
-        return res.status(403).send({ message: "Unauthorized!" });
+        return res.status(403).send({ message: "Unauthorized!", token: false });
       }
       req.userId = decoded.id;
 
