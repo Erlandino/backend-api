@@ -6,9 +6,12 @@ const db = require("../models");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const mongoose = require("mongoose");
+const { findOneAndUpdate } = require("../models/user.model");
 
 const User = db.user;
 const Post = db.post;
+const Reply = db.reply;
 
 // exports api routes to server.js
 module.exports = function (app) {
@@ -123,53 +126,55 @@ module.exports = function (app) {
       }
     });
   });
-  // myBookSchema.findOne({ "publisherId: publisherId", "books.bookId": bookId,}, {"books.$": 1})
 
   // User replies to a comment api
   app.post("/api/auth/reply", [verifyToken], (req, res, next) => {
     User.findOne({ _id: req.userId }, async (err, user) => {
       if (user) {
-        console.log(typeof req.body.replyId);
+        console.log(req.body.replyId);
+        console.log(req.body.topId);
 
-        const originalPost = await Post.findOne({ _id: req.body.replyId });
+        const newReplyPost = new Reply({
+          mainPostId: req.body.topId
+            ? mongoose.Types.ObjectId(req.body.topId)
+            : mongoose.Types.ObjectId(req.body.replyId),
+          currentNestId: req.body.topId ? mongoose.Types.ObjectId(req.body.replyId) : null,
+          username: user.username,
+          post: req.body.post,
+          date: req.body.date,
+          profileImage: user.profileImage,
+          profileColor: user.profileColor,
+        });
 
-        console.log(originalPost);
-        if (!originalPost) {
-          res.status(400).send({ message: "The post you are trying to reply to does not exist" });
-        } else {
-          const newReplyPost = new Post({
-            username: user.username,
-            post: req.body.post,
-            date: req.body.date,
-            profileImage: user.profileImage,
-            profileColor: user.profileColor,
-          });
-
-          console.log("Original post: " + originalPost);
-          console.log("New reply post: " + newReplyPost);
-          // const replyPostArray = [...originalPost.replyPost];
-          originalPost.replyPost.push(newReplyPost);
-
-          console.log("Updated original post: " + originalPost);
-
-          originalPost.save((err) => {
-            res.status(201).send({ message: "Reply posted!" });
-          });
-
-          // const updateProfile = await Post.findOneAndUpdate(
-          //   { _id: req.body.replyId },
-          //   { replyPost: replyPostArray },
-          //   { upsert: true, new: true }
-          // );
-
-          // const updatePosts = await Post.updateMany(
-          //   { username: user.username },
-          //   { profileImage: user.profileImage },
-          //   { upsert: true }
-          // );
-
-          // res.status(201).send({ message: "Reply posted" });
+        if (req.body.topId) {
+          Reply.findOneAndUpdate(
+            { _id: req.body.replyId },
+            { $push: { replyPosts: newReplyPost._id } },
+            function (error, success) {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log(success);
+              }
+            }
+          );
+        } else if (req.body.replyId) {
+          Post.findOneAndUpdate(
+            { _id: req.body.replyId },
+            { $push: { replyPosts: newReplyPost._id } },
+            function (error, success) {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log(success);
+              }
+            }
+          );
         }
+
+        newReplyPost.save((err) => {
+          res.status(201).send({ message: "reply was registered successfully!" });
+        });
       } else {
         res.status(401).send({ message: "User currently not logged in" });
       }
@@ -177,20 +182,25 @@ module.exports = function (app) {
   });
 
   // retrieves a set amount of comments from database api
-  app.get("/api/auth/user-comments", (req, res, next) => {
+  app.get("/api/auth/user-comments", async (req, res, next) => {
     const { limit, offset } = req.query;
     if (isNaN(offset)) {
       res.status(400).send({ message: "Offset need to be numbers" });
     } else {
-      Post.countDocuments((err, count) => {
-        Post.find({}, function (err, posts) {
-          res.send({ posts: posts, totalPosts: count });
-        })
-          .skip(offset)
-          .sort({ _id: -1 })
-          .limit(limit);
-      });
-      // res.status(200).send({ message: "Comments sent" });
+      const count = await Post.countDocuments();
+
+      Post.find({}, async function (err, mainPosts) {
+        const replies = await Promise.all(
+          mainPosts.map((element) => {
+            const reply = Reply.find({ mainPostId: element._id });
+            return reply;
+          })
+        );
+        res.send({ posts: mainPosts, replies: replies, totalPosts: count });
+      })
+        .skip(offset)
+        .sort({ _id: -1 })
+        .limit(limit);
     }
   });
 };

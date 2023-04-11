@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 
 // User schema
-const Post = mongoose.model(
-  "Post",
+const Reply = mongoose.model(
+  "Reply",
   new mongoose.Schema({
+    mainPostId: mongoose.Schema.Types.ObjectId,
+    currentNestId: mongoose.Schema.Types.ObjectId,
     username: String,
     post: String,
     date: String,
@@ -14,4 +16,4 @@ const Post = mongoose.model(
 );
 
 // exports
-module.exports = Post;
+module.exports = Reply;
