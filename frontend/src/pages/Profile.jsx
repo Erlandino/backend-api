@@ -14,7 +14,6 @@ export async function loader() {
   });
   const profileData = await profileDataFetch.json();
 
-  console.log(profileData);
   if (!profileDataFetch.ok) {
     return redirect("/login");
   } else {

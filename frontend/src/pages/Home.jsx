@@ -84,9 +84,11 @@ export default function Home(props) {
     }
   }
 
-  async function replyToPostApi(replyId) {
+  async function replyToPostApi(topId, replyId) {
     // gets current date and puts it in a neat string format
     const date = new Date().toDateString();
+    console.log(topId);
+    console.log(replyId);
 
     // sends post to api to store in database
     const res = await fetch("http://localhost:9000/api/auth/reply", {
@@ -95,11 +97,8 @@ export default function Home(props) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ post: replyData, date: date, replyId: replyId }),
+      body: JSON.stringify({ post: replyData, date: date, topId: topId, replyId: replyId }),
     });
-
-    const data = await res.json();
-
     // Puts login response in the class responseText div
     if (res.ok) {
       /* if correct username/password*/
@@ -112,29 +111,30 @@ export default function Home(props) {
     }
   }
 
-  function postLayout(element, index) {
+  function postLayout(element, topId) {
+    const { username, post, date, profileColor, profileImage, _id } = element;
     return (
       <>
         <Stack className="d-flex flex-row" gap={3}>
           <img
-            src={element.profileImage}
+            src={profileImage}
             alt=""
             style={{ width: "60px", height: "60px", borderRadius: "100%" }}
           />
           <div className="dateAndName d-flex flex-column">
-            <p className="" style={{ color: element.profileColor }}>
-              {element.username}
+            <p className="" style={{ color: profileColor }}>
+              {username}
             </p>
-            <p className="date text-body">{element.date}</p>
+            <p className="date text-body">{date}</p>
           </div>
         </Stack>
-        <p>{element.post}</p>
+        <p>{post}</p>
         <div className="d-flex flex-row justify-content-between">
           <div className="d-flex gap-1">
             <Button
               onClick={() =>
                 setReply((prevReply) => {
-                  return prevReply === element._id ? null : element._id;
+                  return prevReply === _id ? null : _id;
                 })
               }
             >
@@ -152,7 +152,7 @@ export default function Home(props) {
         {/* reply to post */}
         <div
           className="mt-2 w-75 align-self-center"
-          style={{ display: reply === element._id ? "block" : "none" }}
+          style={{ display: reply === _id ? "block" : "none" }}
         >
           {/* Response Text */}
           {responseText && <p className="responseText">{responseText}</p>}
@@ -166,7 +166,7 @@ export default function Home(props) {
                 placeholder="Write here"
                 as="textarea"
                 rows={3}
-                onChange={(e) => setReplyData((_prevState) => e.target.value)}
+                onChange={(e) => setReplyData((prevState) => e.target.value)}
               />
             </Form.Group>
             {/* Posts comment in input */}
@@ -176,7 +176,7 @@ export default function Home(props) {
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
-                return replyToPostApi(element._id);
+                return replyToPostApi(topId, _id);
               }}
             >
               Post
@@ -187,33 +187,46 @@ export default function Home(props) {
     );
   }
 
-  function repliesToPost(array) {
-    return array.map((element, index) => {
-      if (element.replyPost.length > 0) {
-        postsMapping(element.replyPost);
-      }
-      return (
-        <div
-          key={element._id}
-          style={{ width: "80%", marginTop: "20px" }}
-          className="align-self-center"
-        >
-          {postLayout(element, index)}
-        </div>
-      );
-    });
+  function repliesToPost(element, topId, allReplies) {
+    return (
+      <section key={element._id} style={{ width: "95%", marginTop: "20px", marginLeft: "auto" }}>
+        <article>{postLayout(element, topId)}</article>
+        {element.replyPosts && allReplies
+          ? element.replyPosts.map((innerId) => {
+              const innerElement = allReplies.find((replyElement) => {
+                if (replyElement._id === innerId) {
+                  return replyElement;
+                }
+              });
+
+              return repliesToPost(innerElement, topId, allReplies);
+            })
+          : ""}
+      </section>
+    );
   }
 
   function postsMapping(posts) {
-    /* Maps trough comments from api call */
+    /* Maps trough posts from api call */
     return posts.posts.map((element, index) => {
+      // Destructuring
+      const { _id } = element;
       return (
-        <div key={index} className="Chat-message">
-          {postLayout(element, index)}
+        <section key={_id} className="Chat-message">
+          {/* Main post */}
+          <article>{postLayout(element)}</article>
 
-          {/* replies */}
-          {repliesToPost(element.replyPost)}
-        </div>
+          {/* Replies */}
+          <section className="d-flex flex-column align-content-end flex-wrap ">
+            {element.replyPosts.length > 0
+              ? posts.replies[index].map((replyPost) => {
+                  if (replyPost.mainPostId === _id && !replyPost.currentNestId) {
+                    return repliesToPost(replyPost, _id, posts.replies[index]);
+                  }
+                })
+              : ""}
+          </section>
+        </section>
       );
     });
   }

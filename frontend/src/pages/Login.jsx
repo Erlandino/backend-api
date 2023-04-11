@@ -58,6 +58,7 @@ export default function Login(props) {
               type="username"
               placeholder="Enter username"
               className="py-3 mb-2"
+              autoComplete="username"
               onChange={(e) =>
                 setLoginDetails((prevLoginDetails) => {
                   return { ...prevLoginDetails, username: e.target.value };
@@ -71,6 +72,7 @@ export default function Login(props) {
               type="password"
               placeholder="Enter password"
               className="py-3 mb-2"
+              autoComplete="current-password"
               onChange={(e) =>
                 setLoginDetails((prevLoginDetails) => {
                   return { ...prevLoginDetails, password: e.target.value };
